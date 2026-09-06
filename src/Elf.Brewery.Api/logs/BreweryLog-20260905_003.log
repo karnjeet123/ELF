@@ -1,0 +1,7 @@
+2026-09-05 16:28:11.469 +05:30 [INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2026-09-05 16:28:11.746 +05:30 [INF] User profile is available. Using 'C:\Users\KA40023030\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-09-05 16:28:11.875 +05:30 [INF] Now listening on: http://localhost:5299
+2026-09-05 16:28:11.877 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-09-05 16:28:11.878 +05:30 [INF] Hosting environment: Development
+2026-09-05 16:28:11.878 +05:30 [INF] Content root path: D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Api

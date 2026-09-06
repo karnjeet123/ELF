@@ -1,0 +1,15 @@
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Application\bin\Debug\net8.0\Elf.Brewery.Application.deps.json
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Application\bin\Debug\net8.0\Elf.Brewery.Application.dll
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Application\bin\Debug\net8.0\Elf.Brewery.Application.pdb
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Application\obj\Debug\net8.0\Elf.Brewery.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Application\obj\Debug\net8.0\Elf.Brewery.Application.AssemblyInfoInputs.cache
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Application\obj\Debug\net8.0\Elf.Brewery.Application.AssemblyInfo.cs
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Application\obj\Debug\net8.0\Elf.Brewery.Application.csproj.CoreCompileInputs.cache
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Application\obj\Debug\net8.0\Elf.Brewery.Application.dll
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Application\obj\Debug\net8.0\refint\Elf.Brewery.Application.dll
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Application\obj\Debug\net8.0\Elf.Brewery.Application.pdb
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Application\obj\Debug\net8.0\ref\Elf.Brewery.Application.dll
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Application\bin\Debug\net8.0\Elf.Brewery.Domain.dll
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Application\bin\Debug\net8.0\Elf.Brewery.Domain.pdb
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Application\obj\Debug\net8.0\Elf.Brewery.Application.csproj.AssemblyReference.cache
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Application\obj\Debug\net8.0\Elf.Brew.77B15476.Up2Date

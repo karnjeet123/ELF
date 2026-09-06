@@ -1,0 +1,17 @@
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\bin\Debug\net8.0\Elf.Brewery.Infrastructure.deps.json
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\bin\Debug\net8.0\Elf.Brewery.Infrastructure.dll
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\bin\Debug\net8.0\Elf.Brewery.Infrastructure.pdb
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\obj\Debug\net8.0\Elf.Brewery.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\obj\Debug\net8.0\Elf.Brewery.Infrastructure.AssemblyInfoInputs.cache
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\obj\Debug\net8.0\Elf.Brewery.Infrastructure.AssemblyInfo.cs
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\obj\Debug\net8.0\Elf.Brewery.Infrastructure.csproj.CoreCompileInputs.cache
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\obj\Debug\net8.0\Elf.Brewery.Infrastructure.dll
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\obj\Debug\net8.0\refint\Elf.Brewery.Infrastructure.dll
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\obj\Debug\net8.0\Elf.Brewery.Infrastructure.pdb
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\obj\Debug\net8.0\ref\Elf.Brewery.Infrastructure.dll
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\bin\Debug\net8.0\Elf.Brewery.Application.dll
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\bin\Debug\net8.0\Elf.Brewery.Domain.dll
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\bin\Debug\net8.0\Elf.Brewery.Application.pdb
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\bin\Debug\net8.0\Elf.Brewery.Domain.pdb
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\obj\Debug\net8.0\Elf.Brewery.Infrastructure.csproj.AssemblyReference.cache
+D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\obj\Debug\net8.0\Elf.Brew.50EBE57A.Up2Date

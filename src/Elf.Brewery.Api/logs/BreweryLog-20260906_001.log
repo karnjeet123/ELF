@@ -1,0 +1,11 @@
+2026-09-06 20:49:41.820 +05:30 [INF] Executed DbCommand (43ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2026-09-06 20:49:42.615 +05:30 [INF] User profile is available. Using 'C:\Users\KA40023030\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-09-06 20:49:42.878 +05:30 [INF] Now listening on: http://localhost:5214
+2026-09-06 20:49:42.883 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-09-06 20:49:42.885 +05:30 [INF] Hosting environment: Development
+2026-09-06 20:49:42.886 +05:30 [INF] Content root path: D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Api
+2026-09-06 20:49:44.853 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/swagger/index.html - null null
+2026-09-06 20:49:45.357 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/swagger/index.html - 200 null text/html;charset=utf-8 514.4779ms
+2026-09-06 20:49:46.017 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/swagger/v1/swagger.json - null null
+2026-09-06 20:49:46.491 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 474.1498ms

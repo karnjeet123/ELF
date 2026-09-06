@@ -1,0 +1,113 @@
+2026-09-05 16:22:47.108 +05:30 [INF] Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2026-09-05 16:22:47.432 +05:30 [INF] User profile is available. Using 'C:\Users\KA40023030\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-09-05 16:22:47.573 +05:30 [INF] Now listening on: http://localhost:5299
+2026-09-05 16:22:47.578 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-09-05 16:22:47.579 +05:30 [INF] Hosting environment: Development
+2026-09-05 16:22:47.580 +05:30 [INF] Content root path: D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Api
+2026-09-05 16:23:08.314 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5299/swagger/v1/swagger.json - null null
+2026-09-05 16:23:08.515 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5299/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 202.5561ms
+2026-09-05 16:23:21.283 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5299/swagger/v1/swagger.json - null null
+2026-09-05 16:23:21.291 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5299/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 7.8645ms
+2026-09-05 16:24:30.060 +05:30 [INF] Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2026-09-05 16:24:30.301 +05:30 [INF] User profile is available. Using 'C:\Users\KA40023030\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-09-05 16:24:30.452 +05:30 [INF] Now listening on: http://localhost:5299
+2026-09-05 16:24:30.453 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-09-05 16:24:30.455 +05:30 [INF] Hosting environment: Development
+2026-09-05 16:24:30.455 +05:30 [INF] Content root path: D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Api
+2026-09-05 16:25:09.386 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5299/swagger/v1/swagger.json - null null
+2026-09-05 16:25:09.578 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5299/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 192.9544ms
+2026-09-05 16:25:20.347 +05:30 [INF] Request starting HTTP/1.1 POST http://localhost:5299/api/auth/token - application/json 65
+2026-09-05 16:25:20.363 +05:30 [WRN] Failed to determine the https port for redirect.
+2026-09-05 16:25:20.482 +05:30 [INF] Executing endpoint 'AuthController.Token (Elf.Brewery.Api)'
+2026-09-05 16:25:20.495 +05:30 [INF] Route matched with {action = "Token", controller = "Auth"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Token(LoginRequest) on controller AuthController (Elf.Brewery.Api).
+2026-09-05 16:25:20.547 +05:30 [INF] Executing OkObjectResult, writing value of type 'TokenResponse'.
+2026-09-05 16:25:20.567 +05:30 [INF] Executed action AuthController.Token (Elf.Brewery.Api) in 68.6186ms
+2026-09-05 16:25:20.568 +05:30 [INF] Executed endpoint 'AuthController.Token (Elf.Brewery.Api)'
+2026-09-05 16:25:20.568 +05:30 [INF] Request finished HTTP/1.1 POST http://localhost:5299/api/auth/token - 200 null application/json; charset=utf-8 221.11ms
+2026-09-05 16:25:20.578 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5299/api/v1/breweries?sortField=City&direction=Desc&pageSize=3 - null null
+2026-09-05 16:25:20.611 +05:30 [INF] Executing endpoint 'BreweriesController.Get (Elf.Brewery.Api)'
+2026-09-05 16:25:20.616 +05:30 [INF] Route matched with {action = "Get", controller = "Breweries"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Get(BreweryQuery, System.Threading.CancellationToken) on controller BreweriesController (Elf.Brewery.Api).
+2026-09-05 16:25:20.643 +05:30 [INF] List breweries search=null sortBy="City" page=1
+2026-09-05 16:25:20.645 +05:30 [INF] Cache miss for key: breweries:all
+2026-09-05 16:25:20.646 +05:30 [INF] Cache miss for key: breweries:all
+2026-09-05 16:25:20.800 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "b"."Id", "b"."BreweryType", "b"."City", "b"."Country", "b"."LastRefreshedUtc", "b"."Latitude", "b"."Longitude", "b"."Name", "b"."Phone", "b"."PostalCode", "b"."State", "b"."Street", "b"."WebsiteUrl"
+FROM "Breweries" AS "b"
+2026-09-05 16:25:20.818 +05:30 [INF] Cache set for key: breweries:all
+2026-09-05 16:25:20.823 +05:30 [INF] Executing OkObjectResult, writing value of type 'PagedResult`1[[BreweryDto, Elf.Brewery.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-09-05 16:25:20.833 +05:30 [INF] Executed action BreweriesController.Get (Elf.Brewery.Api) in 216.2505ms
+2026-09-05 16:25:20.834 +05:30 [INF] Executed endpoint 'BreweriesController.Get (Elf.Brewery.Api)'
+2026-09-05 16:25:20.835 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5299/api/v1/breweries?sortField=City&direction=Desc&pageSize=3 - 200 null application/json; charset=utf-8 257.1229ms
+2026-09-05 16:26:15.142 +05:30 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2026-09-05 16:26:15.459 +05:30 [INF] User profile is available. Using 'C:\Users\KA40023030\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-09-05 16:26:15.611 +05:30 [INF] Now listening on: http://localhost:5214
+2026-09-05 16:26:15.613 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-09-05 16:26:15.614 +05:30 [INF] Hosting environment: Development
+2026-09-05 16:26:15.615 +05:30 [INF] Content root path: D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Api
+2026-09-05 16:26:16.083 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/swagger/index.html - null null
+2026-09-05 16:26:16.318 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/swagger/index.html - 200 null text/html;charset=utf-8 236.6675ms
+2026-09-05 16:26:16.527 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/swagger/v1/swagger.json - null null
+2026-09-05 16:26:16.775 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 248.4022ms
+2026-09-05 16:26:31.085 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/ - null null
+2026-09-05 16:26:31.095 +05:30 [WRN] Failed to determine the https port for redirect.
+2026-09-05 16:26:31.270 +05:30 [INF] Executing endpoint 'HTTP: GET /'
+2026-09-05 16:26:31.298 +05:30 [INF] Executing RedirectResult, redirecting to /swagger.
+2026-09-05 16:26:31.300 +05:30 [INF] Executed endpoint 'HTTP: GET /'
+2026-09-05 16:26:31.301 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/ - 302 0 null 215.6389ms
+2026-09-05 16:26:31.314 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/swagger/index.html - null null
+2026-09-05 16:26:31.316 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/swagger/index.html - 200 null text/html;charset=utf-8 2.0444ms
+2026-09-05 16:31:01.763 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/swagger/index.html - null null
+2026-09-05 16:31:01.765 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/swagger/index.html - 200 null text/html;charset=utf-8 1.7283ms
+2026-09-05 16:31:01.994 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/swagger/v1/swagger.json - null null
+2026-09-05 16:31:02.015 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 21.2981ms
+2026-09-05 16:31:42.921 +05:30 [INF] Request starting HTTP/1.1 POST http://localhost:5214/api/auth/token - application/json 56
+2026-09-05 16:31:42.938 +05:30 [INF] Executing endpoint 'AuthController.Token (Elf.Brewery.Api)'
+2026-09-05 16:31:42.961 +05:30 [INF] Route matched with {action = "Token", controller = "Auth"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Token(LoginRequest) on controller AuthController (Elf.Brewery.Api).
+2026-09-05 16:31:43.066 +05:30 [INF] Executing OkObjectResult, writing value of type 'TokenResponse'.
+2026-09-05 16:31:43.088 +05:30 [INF] Executed action AuthController.Token (Elf.Brewery.Api) in 120.8162ms
+2026-09-05 16:31:43.088 +05:30 [INF] Executed endpoint 'AuthController.Token (Elf.Brewery.Api)'
+2026-09-05 16:31:43.089 +05:30 [INF] Request finished HTTP/1.1 POST http://localhost:5214/api/auth/token - 200 null application/json; charset=utf-8 168.2889ms
+2026-09-05 16:32:38.209 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/api/v1/breweries?SortField=Name&Direction=Asc - null null
+2026-09-05 16:32:38.302 +05:30 [INF] Executing endpoint 'BreweriesController.Get (Elf.Brewery.Api)'
+2026-09-05 16:32:38.315 +05:30 [INF] Route matched with {action = "Get", controller = "Breweries"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Get(BreweryQuery, System.Threading.CancellationToken) on controller BreweriesController (Elf.Brewery.Api).
+2026-09-05 16:32:48.341 +05:30 [INF] List breweries search=null sortBy="Name" page=1
+2026-09-05 16:32:48.347 +05:30 [INF] Cache miss for key: breweries:all
+2026-09-05 16:32:48.348 +05:30 [INF] Cache miss for key: breweries:all
+2026-09-05 16:32:48.543 +05:30 [INF] Executed DbCommand (16ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "b"."Id", "b"."BreweryType", "b"."City", "b"."Country", "b"."LastRefreshedUtc", "b"."Latitude", "b"."Longitude", "b"."Name", "b"."Phone", "b"."PostalCode", "b"."State", "b"."Street", "b"."WebsiteUrl"
+FROM "Breweries" AS "b"
+2026-09-05 16:32:48.562 +05:30 [INF] Cache set for key: breweries:all
+2026-09-05 16:32:50.965 +05:30 [INF] Executing OkObjectResult, writing value of type 'PagedResult`1[[BreweryDto, Elf.Brewery.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-09-05 16:32:50.983 +05:30 [INF] Executed action BreweriesController.Get (Elf.Brewery.Api) in 12666.0423ms
+2026-09-05 16:32:50.985 +05:30 [INF] Executed endpoint 'BreweriesController.Get (Elf.Brewery.Api)'
+2026-09-05 16:32:50.986 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/api/v1/breweries?SortField=Name&Direction=Asc - 200 null application/json; charset=utf-8 12776.6939ms
+2026-09-05 16:33:13.065 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/api/v1/breweries?SortField=Name&Direction=Asc&PageNumber=3&PageSize=400 - null null
+2026-09-05 16:33:13.087 +05:30 [INF] Executing endpoint 'BreweriesController.Get (Elf.Brewery.Api)'
+2026-09-05 16:33:13.089 +05:30 [INF] Route matched with {action = "Get", controller = "Breweries"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Get(BreweryQuery, System.Threading.CancellationToken) on controller BreweriesController (Elf.Brewery.Api).
+2026-09-05 16:33:22.230 +05:30 [INF] List breweries search=null sortBy="Name" page=3
+2026-09-05 16:33:22.231 +05:30 [INF] Cache hit for key: breweries:all
+2026-09-05 16:33:27.005 +05:30 [INF] Executing OkObjectResult, writing value of type 'PagedResult`1[[BreweryDto, Elf.Brewery.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-09-05 16:33:27.009 +05:30 [INF] Executed action BreweriesController.Get (Elf.Brewery.Api) in 13920.105ms
+2026-09-05 16:33:27.010 +05:30 [INF] Executed endpoint 'BreweriesController.Get (Elf.Brewery.Api)'
+2026-09-05 16:33:27.011 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/api/v1/breweries?SortField=Name&Direction=Asc&PageNumber=3&PageSize=400 - 200 null application/json; charset=utf-8 13945.5469ms
+2026-09-05 16:33:53.684 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/api/v1/breweries?SortField=Name&Direction=Asc&PageNumber=1&PageSize=400 - null null
+2026-09-05 16:33:53.688 +05:30 [INF] Executing endpoint 'BreweriesController.Get (Elf.Brewery.Api)'
+2026-09-05 16:33:53.689 +05:30 [INF] Route matched with {action = "Get", controller = "Breweries"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Get(BreweryQuery, System.Threading.CancellationToken) on controller BreweriesController (Elf.Brewery.Api).
+2026-09-05 16:33:53.701 +05:30 [INF] List breweries search=null sortBy="Name" page=1
+2026-09-05 16:33:53.701 +05:30 [INF] Cache hit for key: breweries:all
+2026-09-05 16:33:53.706 +05:30 [INF] Executing OkObjectResult, writing value of type 'PagedResult`1[[BreweryDto, Elf.Brewery.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-09-05 16:33:53.739 +05:30 [INF] Executed action BreweriesController.Get (Elf.Brewery.Api) in 49.6071ms
+2026-09-05 16:33:53.740 +05:30 [INF] Executed endpoint 'BreweriesController.Get (Elf.Brewery.Api)'
+2026-09-05 16:33:53.741 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/api/v1/breweries?SortField=Name&Direction=Asc&PageNumber=1&PageSize=400 - 200 null application/json; charset=utf-8 57.0399ms
+2026-09-05 16:34:22.073 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/api/v1/breweries?SortField=Name&Direction=Desc&PageNumber=1&PageSize=400 - null null
+2026-09-05 16:34:22.078 +05:30 [INF] Executing endpoint 'BreweriesController.Get (Elf.Brewery.Api)'
+2026-09-05 16:34:22.078 +05:30 [INF] Route matched with {action = "Get", controller = "Breweries"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Get(BreweryQuery, System.Threading.CancellationToken) on controller BreweriesController (Elf.Brewery.Api).
+2026-09-05 16:34:22.080 +05:30 [INF] List breweries search=null sortBy="Name" page=1
+2026-09-05 16:34:22.080 +05:30 [INF] Cache hit for key: breweries:all
+2026-09-05 16:34:22.083 +05:30 [INF] Executing OkObjectResult, writing value of type 'PagedResult`1[[BreweryDto, Elf.Brewery.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-09-05 16:34:22.085 +05:30 [INF] Executed action BreweriesController.Get (Elf.Brewery.Api) in 6.552ms
+2026-09-05 16:34:22.086 +05:30 [INF] Executed endpoint 'BreweriesController.Get (Elf.Brewery.Api)'
+2026-09-05 16:34:22.087 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/api/v1/breweries?SortField=Name&Direction=Desc&PageNumber=1&PageSize=400 - 200 null application/json; charset=utf-8 13.8188ms

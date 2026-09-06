@@ -1,0 +1,42 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Launch (HTTP)",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/Elf.Brewery.Api/bin/Debug/net8.0/Elf.Brewery.Api.dll",
+            "cwd": "${workspaceFolder}/src/Elf.Brewery.Api",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "http://localhost:5214"
+            },
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+                "uriFormat": "%s/swagger"
+            }
+        },
+        {
+            "name": ".NET Launch (HTTPS)",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/Elf.Brewery.Api/bin/Debug/net8.0/Elf.Brewery.Api.dll",
+            "cwd": "${workspaceFolder}/src/Elf.Brewery.Api",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "https://localhost:7239;http://localhost:5214"
+            },
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+                "uriFormat": "%s/swagger"
+            }
+        }
+    ]
+}
