@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\Elf.Brewery.Api.props" />
-</Project>
