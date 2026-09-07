@@ -1,4 +1,20 @@
 using Microsoft.Extensions.DependencyInjection;
+using DomainBrewery = Elf.Brewery.Domain.Entities.Brewery;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Elf.Brewery.Application.Contracts;
+using Elf.Brewery.Application.Dtos;
+using Elf.Brewery.Application.Search;
+using Elf.Brewery.Domain.Enums;
+using Elf.Brewery.Domain.Exceptions;
+using Elf.Brewery.Domain.ValueObjects;
+
+
+namespace Elf.Brewery.Application.Services;
+
 
 public sealed class BreweryService : IBreweryService
 {
@@ -74,7 +90,7 @@ public sealed class BreweryService : IBreweryService
         return await _breweries.RefreshFromExternalAsync(ct);
     }
 
-    private static double? Distance(GeoCoordinate? origin, Brewery brewery)
+    private static double? Distance(GeoCoordinate? origin, DomainBrewery brewery)
     {
         if (origin is null || brewery.Latitude is null || brewery.Longitude is null)
             return null;

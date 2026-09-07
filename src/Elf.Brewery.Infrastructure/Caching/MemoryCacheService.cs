@@ -1,5 +1,8 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Elf.Brewery.Application.Contracts;
+
+namespace Elf.Brewery.Infrastructure.Caching;
 
 public sealed class MemoryCacheService : ICacheService
 {

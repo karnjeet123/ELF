@@ -1,3 +1,6 @@
+
+namespace Elf.Brewery.Application.Contracts;
+
 public interface ICacheService
 {
     Task<(bool Found, T? Value)> TryGetAsync<T>(string key, CancellationToken ct);

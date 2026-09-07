@@ -4,6 +4,11 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Elf.Brewery.Application.Contracts;
+using Elf.Brewery.Application.Dtos;
+using Elf.Brewery.Infrastructure.Options;
+
+namespace Elf.Brewery.Infrastructure.Security;
 
 public sealed class JwtTokenService : ITokenService
 {

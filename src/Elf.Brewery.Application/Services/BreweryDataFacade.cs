@@ -2,6 +2,15 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using DomainBrewery = Elf.Brewery.Domain.Entities.Brewery;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Elf.Brewery.Application.Contracts;
+using Elf.Brewery.Application.Options;
+
+namespace Elf.Brewery.Application.Services;
 
 public class BreweryDataFacade : IBreweryDataFacade
 {
@@ -25,21 +34,22 @@ public class BreweryDataFacade : IBreweryDataFacade
         _cache = cache;
         _cacheOptions = cacheOptions;
         _logger = logger;
+        // Key includes the storage so v1 and v2 never read each other's cached list.
         _cacheKey = $"breweries:all:{storageKey}";
         _ttl = TimeSpan.FromMinutes(cacheOptions.Value.ExpirationMinutes);
     }
 
-    public async Task<IReadOnlyList<Brewery>> GetAllAsync(CancellationToken ct)
+    public async Task<IReadOnlyList<DomainBrewery>> GetAllAsync(CancellationToken ct)
     {
-        var (found, cached) = await _cache.TryGetAsync<IReadOnlyList<Brewery>>(_cacheKey, ct);
+        var (found, cached) = await _cache.TryGetAsync<IReadOnlyList<DomainBrewery>>(_cacheKey, ct);
         if (found && cached is not null)
             return cached;
-
+        // Gate stops a cold cache from triggering several parallel repository reads.
         await RefreshGate.WaitAsync(ct);
         try
         {
             // Double-check the cache after acquiring the lock
-            (found, cached) = await _cache.TryGetAsync<IReadOnlyList<Brewery>>(_cacheKey, ct);
+            (found, cached) = await _cache.TryGetAsync<IReadOnlyList<DomainBrewery>>(_cacheKey, ct);
             if (found && cached is not null)
                 return cached;
             var data = await _repository.GetAllAsync(ct);

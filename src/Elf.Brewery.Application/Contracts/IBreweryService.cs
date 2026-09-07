@@ -1,3 +1,5 @@
+namespace Elf.Brewery.Application.Contracts;
+using Elf.Brewery.Application.Dtos;
 public interface IBreweryService
 {
     Task<PagedResult<BreweryDto>> GetBreweriesAsync(BreweryQuery query, CancellationToken ct);

@@ -1,5 +1,7 @@
 using Serilog.Context;
 
+namespace Elf.Brewery.Api.Middleware;
+
 public sealed class CorrelationIdMiddleware(RequestDelegate next)
 {
     private const string HeaderName = "X-Correlation-Id";

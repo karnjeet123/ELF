@@ -1,3 +1,5 @@
+namespace Elf.Brewery.Infrastructure.Options;
+
 public sealed class OpenBreweryDbOptions
 {
     public string BaseUrl { get; init; } = "https://api.openbrewerydb.org/v1/";

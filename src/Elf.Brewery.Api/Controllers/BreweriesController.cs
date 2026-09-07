@@ -1,7 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using Asp.Versioning;
+using Elf.Brewery.Application.Contracts;
+using Elf.Brewery.Application.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+namespace Elf.Brewery.Api.Controllers;
 
 [ApiController]
 [Authorize]
@@ -11,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 public sealed class BreweriesController
     : ControllerBase
 {
-    
+
     private readonly IBreweryService service;
     private readonly ILogger<BreweriesController> logger;
 
@@ -23,7 +27,7 @@ public sealed class BreweriesController
         this.logger = logger;
     }
 
-    
+
     [HttpGet]
     [ProducesResponseType(typeof(PagedResult<BreweryDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -40,9 +44,9 @@ public sealed class BreweriesController
     [ProducesResponseType(typeof(BreweryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(string id, CancellationToken ct)
-        {
-            return Ok(await service.GetBreweryByIdAsync(id, ct));
-        }
+    {
+        return Ok(await service.GetBreweryByIdAsync(id, ct));
+    }
 
     [HttpGet("autocomplete")]
     [ProducesResponseType(typeof(IReadOnlyList<AutocompleteItemDto>), StatusCodes.Status200OK)]
@@ -53,7 +57,7 @@ public sealed class BreweriesController
     {
         return Ok(await service.GetAutoCompleteAsync(term, limit, ct));
     }
-         
+
 
     [HttpGet("cities")]
     public async Task<IActionResult> Cities(CancellationToken ct)

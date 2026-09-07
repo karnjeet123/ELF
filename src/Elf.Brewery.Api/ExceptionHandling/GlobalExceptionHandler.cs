@@ -1,5 +1,8 @@
+using Elf.Brewery.Domain.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+
+namespace Elf.Brewery.Api.ExceptionHandling;
 
 public sealed class GlobalExceptionHandler : IExceptionHandler
 {

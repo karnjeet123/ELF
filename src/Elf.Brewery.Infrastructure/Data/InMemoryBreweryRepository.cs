@@ -1,16 +1,21 @@
 
 using System.Collections.Concurrent;
+using DomainBrewery = Elf.Brewery.Domain.Entities.Brewery;
+using System.Linq;
+using Elf.Brewery.Application.Contracts;
+
+namespace Elf.Brewery.Infrastructure.Data;
 
 public sealed class InMemoryBreweryRepository : IBreweryRepository
 {
-    
-    private readonly ConcurrentDictionary<string, Brewery> _store = new(StringComparer.OrdinalIgnoreCase); 
-    public Task<IReadOnlyList<Brewery>> GetAllAsync(CancellationToken ct)
+
+    private readonly ConcurrentDictionary<string, DomainBrewery> _store = new(StringComparer.OrdinalIgnoreCase);
+    public Task<IReadOnlyList<DomainBrewery>> GetAllAsync(CancellationToken ct)
     {
-        return Task.FromResult((IReadOnlyList<Brewery>)_store.Values.ToList());
+        return Task.FromResult((IReadOnlyList<DomainBrewery>)_store.Values.ToList());
     }
 
-    public Task<Brewery?> GetByIdAsync(string id, CancellationToken ct)
+    public Task<DomainBrewery?> GetByIdAsync(string id, CancellationToken ct)
     {
         _store.TryGetValue(id, out var brewery);
         return Task.FromResult(brewery);
@@ -22,7 +27,7 @@ public sealed class InMemoryBreweryRepository : IBreweryRepository
         return Task.FromResult(lastRefresh);
     }
 
-    public Task UpsertRangeAsync(IEnumerable<Brewery> breweries, CancellationToken ct)
+    public Task UpsertRangeAsync(IEnumerable<DomainBrewery> breweries, CancellationToken ct)
     {
         foreach (var brewery in breweries)
         {
@@ -30,4 +35,5 @@ public sealed class InMemoryBreweryRepository : IBreweryRepository
         }
         return Task.CompletedTask;
     }
+
 }

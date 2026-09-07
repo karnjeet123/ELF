@@ -1,3 +1,6 @@
+
+namespace Elf.Brewery.Application.Dtos;
+
 public sealed record BreweryDto(
    string Id,
     string Name,
@@ -5,7 +8,7 @@ public sealed record BreweryDto(
     string? State,
     string? Country,
     string? Phone,
-    string? WebsiteUrl ,
+    string? WebsiteUrl,
     string? BreweryType,
     string? Street,
     double? Latitude,

@@ -1,3 +1,5 @@
+namespace Elf.Brewery.Domain.ValueObjects;
+
 public readonly record struct GeoCoordinate(double Latitude, double Longitude)
 {
     private const double EarthRadiusKm = 6371.0;

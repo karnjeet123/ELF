@@ -1,7 +1,8 @@
+namespace Elf.Brewery.Domain.Entities;
 public sealed class Brewery
 {
     public string Id { get; set; } = default!;
-        public string Name { get; set; } = default!;
+    public string Name { get; set; } = default!;
     public string? BreweryType { get; set; }
     public string? Street { get; set; }
     public string? City { get; set; }

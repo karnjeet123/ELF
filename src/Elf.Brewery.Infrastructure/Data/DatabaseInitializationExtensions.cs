@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
+namespace Elf.Brewery.Infrastructure.Data;
+
 public static class DatabaseInitializationExtensions
 {
     public static async Task InitializeInfrastructureDatabaseAsync(

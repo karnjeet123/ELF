@@ -1,7 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using Asp.Versioning;
+using Elf.Brewery.Application.Contracts;
+using Elf.Brewery.Application.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+namespace Elf.Brewery.Api.Controllers;
 
 [ApiController]
 [Authorize]
@@ -16,7 +20,8 @@ public sealed class BreweriesV2Controller
 
     public BreweriesV2Controller(
         [FromKeyedServices(BreweryStorageKeys.InMemory)] IBreweryService service,
-        ILogger<BreweriesV2Controller> logger)    {
+        ILogger<BreweriesV2Controller> logger)
+    {
         this.service = service;
         this.logger = logger;
     }

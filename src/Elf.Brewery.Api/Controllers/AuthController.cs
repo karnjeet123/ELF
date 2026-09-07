@@ -1,5 +1,9 @@
+using Elf.Brewery.Application.Contracts;
+using Elf.Brewery.Application.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+namespace Elf.Brewery.Api.Controllers;
 
 [ApiController]
 [AllowAnonymous]
@@ -16,7 +20,7 @@ public sealed class AuthController : ControllerBase
     }
 
     [HttpPost("token")]
-    [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public IActionResult Token([FromBody] LoginRequest request)
     {
@@ -30,7 +34,7 @@ public sealed class AuthController : ControllerBase
                 Detail = "Invalid username or password."     // deliberately vague
             });
         }
-
+        // Single static user, so the role is fixed rather than looked up.
         return Ok(tokens.CreateToken(request.Username, new[] { "Admin" }));
     }
 }

@@ -1,14 +1,22 @@
 using Asp.Versioning;
+using Elf.Brewery.Api.ExceptionHandling;
+using Elf.Brewery.Api.Middleware;
+using Elf.Brewery.Api.Swagger;
+using Elf.Brewery.Application;
+using Elf.Brewery.Application.Options;
+using Elf.Brewery.Infrastructure;
+using Elf.Brewery.Infrastructure.Data;
+using Elf.Brewery.Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Host.UseSerilog((ctx,cfg) => cfg.ReadFrom.Configuration(ctx.Configuration)
+builder.Host.UseSerilog((ctx, cfg) => cfg.ReadFrom.Configuration(ctx.Configuration)
 .Enrich.FromLogContext()
 .WriteTo.Console()
-.WriteTo.File("logs/BreweryLog-.log", rollingInterval: RollingInterval.Day  )
+.WriteTo.File("logs/BreweryLog-.log", rollingInterval: RollingInterval.Day)
 );
 
 

@@ -1,7 +1,8 @@
 using System.Reflection;
-using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+
+namespace Elf.Brewery.Api.Swagger;
 
 public static class SwaggerSetup
 {
@@ -42,46 +43,5 @@ public static class SwaggerSetup
 
         if (File.Exists(xml))
             o.IncludeXmlComments(xml);
-    }
-}
-
-public sealed class EnumParameterFilter : IParameterFilter
-{
-    public void Apply(OpenApiParameter parameter, ParameterFilterContext context)
-    {
-        var enumType = Nullable.GetUnderlyingType(context.ApiParameterDescription.Type)
-            ?? context.ApiParameterDescription.Type;
-
-        if (!enumType.IsEnum)
-            return;
-
-        var values = Enum.GetValues(enumType);
-        var names = Enum.GetNames(enumType);
-
-        parameter.Description = string.Join(", ", values.Cast<object>()
-            .Select((value, index) => $"{names[index]} = {Convert.ToInt32(value)}"));
-
-        parameter.Schema.Type = "string";
-        parameter.Schema.Format = null;
-        parameter.Schema.Enum = names
-            .Select(name => (IOpenApiAny)new OpenApiString(name))
-            .ToList();
-    }
-}
-
-public sealed class EnumSchemaFilter : ISchemaFilter
-{
-    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
-    {
-        var enumType = Nullable.GetUnderlyingType(context.Type) ?? context.Type;
-
-        if (!enumType.IsEnum)
-            return;
-
-        schema.Type = "string";
-        schema.Format = null;
-        schema.Enum = Enum.GetNames(enumType)
-            .Select(name => (IOpenApiAny)new OpenApiString(name))
-            .ToList();
     }
 }

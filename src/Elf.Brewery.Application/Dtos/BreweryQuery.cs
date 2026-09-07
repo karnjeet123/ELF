@@ -1,3 +1,6 @@
+namespace Elf.Brewery.Application.Dtos;
+using Elf.Brewery.Domain.Enums;
+
 public sealed class BreweryQuery
 {
     public string? Search { get; init; }

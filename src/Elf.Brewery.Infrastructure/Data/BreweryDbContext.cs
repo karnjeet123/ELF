@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using DomainBrewery = Elf.Brewery.Domain.Entities.Brewery;
+
+namespace Elf.Brewery.Infrastructure.Data;
 
 public class BreweryDbContext : DbContext
 {
@@ -6,11 +9,11 @@ public class BreweryDbContext : DbContext
     {
     }
 
-    public DbSet<Brewery> Breweries => Set<Brewery>();
+    public DbSet<DomainBrewery> Breweries => Set<DomainBrewery>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
-        b.Entity<Brewery>(entity =>
+        b.Entity<DomainBrewery>(entity =>
         {
             entity.ToTable("Breweries");
             entity.HasKey(e => e.Id);
@@ -19,6 +22,6 @@ public class BreweryDbContext : DbContext
             entity.HasIndex(e => e.Name);
             entity.HasIndex(e => e.City);
         });
-        
+
     }
 }

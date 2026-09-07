@@ -1,5 +1,7 @@
 using System.Text.Json.Serialization;
 
+namespace Elf.Brewery.Infrastructure.External.Models;
+
 public sealed class BrewerySourceDto
 {
     [JsonPropertyName("id")]

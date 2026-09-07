@@ -1,3 +1,5 @@
+namespace Elf.Brewery.Application.Dtos;
+
 public sealed class PagedResult<T>
 {
     public PagedResult(IReadOnlyList<T> items, int totalCount, int pageNumber, int pageSize)

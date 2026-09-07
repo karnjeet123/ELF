@@ -1,4 +1,12 @@
-public sealed class BrewerySorterFactory:IBrewerySorterFactory
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Elf.Brewery.Application.Contracts;
+using Elf.Brewery.Application.Options;
+using Elf.Brewery.Domain.Enums;
+
+namespace Elf.Brewery.Application.Sorting;
+public sealed class BrewerySorterFactory : IBrewerySorterFactory
 {
     private readonly Dictionary<BrewerySortField, IBrewerySorter> _sorters;
 

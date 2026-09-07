@@ -1,26 +1,34 @@
-public sealed class BreweryMapper: IBrewerySourceMapper,IBreweryDtoMapper
+using Elf.Brewery.Infrastructure.Contracts;
+using Elf.Brewery.Infrastructure.External.Models;
+using DomainBrewery = Elf.Brewery.Domain.Entities.Brewery;
+using Elf.Brewery.Application.Contracts;
+using Elf.Brewery.Application.Dtos;
+
+namespace Elf.Brewery.Infrastructure.Mapper;
+
+public sealed class BreweryMapper : IBrewerySourceMapper, IBreweryDtoMapper
 {
-    public Brewery ToDomain(BrewerySourceDto source)
+    public DomainBrewery ToDomain(BrewerySourceDto source)
     {
-        return new Brewery
+        return new DomainBrewery
         {
             Id = source.Id,
-            Name = source.Name?.Trim()??string.Empty,
+            Name = source.Name?.Trim() ?? string.Empty,
             BreweryType = source.BreweryType,
-            Street= source.Address1?.Trim()??string.Empty,
-            City = source.City?.Trim()??string.Empty,
-            State = source.StateProvince?.Trim()??string.Empty,
-            Country = source.Country?.Trim()??string.Empty,
-            PostalCode = source.PostalCode?.Trim()??string.Empty,
-            Phone = FormatPhone(source.Phone?.Trim()??string.Empty),
-            WebsiteUrl = source.WebsiteUrl?.Trim()??string.Empty,
+            Street = source.Address1?.Trim() ?? string.Empty,
+            City = source.City?.Trim() ?? string.Empty,
+            State = source.StateProvince?.Trim() ?? string.Empty,
+            Country = source.Country?.Trim() ?? string.Empty,
+            PostalCode = source.PostalCode?.Trim() ?? string.Empty,
+            Phone = FormatPhone(source.Phone?.Trim() ?? string.Empty),
+            WebsiteUrl = source.WebsiteUrl?.Trim() ?? string.Empty,
             Latitude = source.Latitude,
             Longitude = source.Longitude,
             LastRefreshedUtc = DateTimeOffset.UtcNow
         };
     }
 
-    public BreweryDto ToDto(Brewery brewery, double? distanceKm)
+    public BreweryDto ToDto(DomainBrewery brewery, double? distanceKm)
     {
         return new BreweryDto(
             brewery.Id,
@@ -49,5 +57,5 @@ public sealed class BreweryMapper: IBrewerySourceMapper,IBreweryDtoMapper
             : phone;
     }
 
-    
+
 }
