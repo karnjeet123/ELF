@@ -145,6 +145,27 @@ Run everything with:
 dotnet test Elf.Brewery.sln
 ```
 
+### Code coverage (project-wise)
+
+Generated via `dotnet test --collect:"XPlat Code Coverage"` + `reportgenerator`. Overall line coverage is **64.8%** across 33 tests (25 unit + 8 integration). Breakdown by project:
+
+| Project | Line coverage | Notes |
+|---|---|---|
+| `Elf.Brewery.Api` | 74% | Controllers hit via integration tests; `BreweriesController` (v1/Sqlite) is 0% since tests exercise v2 (in-memory) only; Swagger filter classes untested (cosmetic, not logic) |
+| `Elf.Brewery.Application` | 73.3% | Sorters, factory, and `BreweryService` well covered; `BrewerySearchService` (20.8%) and DTO mapping paths are the main gaps |
+| `Elf.Brewery.Domain` | 69.2% | `GeoCoordinate` and exceptions at 100%; `Brewery` entity itself is mostly just properties (38.4%, largely auto-property getters/setters that don't need explicit tests) |
+| `Elf.Brewery.Infrastructure` | 47.3% | JWT, options, EF `DbContext`, and cache service well covered; `SqliteBreweryRepository` (0%) and `BreweryMapper` (0%) aren't exercised yet — the SQLite path is only reachable via `BreweriesController` (v1), which the integration tests don't currently target |
+
+To regenerate this locally:
+
+```
+dotnet test Elf.Brewery.sln --collect:"XPlat Code Coverage" --results-directory .\coverage-results
+dotnet tool install -g dotnet-reportgenerator-globaltool
+reportgenerator -reports:"coverage-results\**\coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:Html
+```
+
+Then open `coverage-report\index.html` for the full drill-down. Both `coverage-results/` and `coverage-report/` are gitignored since they're build artifacts.
+
 ## Configuration
 
 | Key | Notes |
