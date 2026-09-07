@@ -17,6 +17,69 @@ Elf.Brewery.Application    <-- Interfaces (contracts), DTOs, services, sorting, 
 Elf.Brewery.Domain         <-- Entities, value objects, enums, exceptions (no dependencies)
 ```
 
+### Diagram: layers and request flow
+
+```mermaid
+flowchart TB
+    Client(["Client / Swagger UI"])
+
+    subgraph API["Elf.Brewery.Api"]
+        Controllers["Controllers\n(BreweriesController v1 / v2, AuthController)"]
+        Middleware["Middleware\n(CorrelationId, GlobalExceptionHandler)"]
+    end
+
+    subgraph APP["Elf.Brewery.Application"]
+        Service["BreweryService"]
+        Facade["BreweryDataFacade\n(cache-aside + semaphore)"]
+        Search["BrewerySearchService"]
+        SorterFactory["BrewerySorterFactory"]
+        Sorters["NameSorter / CitySorter / DistanceSorter"]
+    end
+
+    subgraph INFRA["Elf.Brewery.Infrastructure"]
+        Cache["MemoryCacheService"]
+        SqliteRepo["SqliteBreweryRepository\n(EF Core)"]
+        MemRepo["InMemoryBreweryRepository"]
+        HttpProvider["OpenBreweryDbProvider\n(Polly retry + circuit breaker)"]
+        Jwt["JwtTokenService"]
+    end
+
+    subgraph DOMAIN["Elf.Brewery.Domain"]
+        Entity["Brewery entity"]
+        Geo["GeoCoordinate"]
+        Exceptions["Domain exceptions"]
+    end
+
+    External(["Open Brewery DB\n(public API)"])
+    Sqlite[("brewery.db\n(SQLite file)")]
+    InMem[("In-memory dictionary")]
+
+    Client -->|"HTTP + JWT bearer token"| Controllers
+    Controllers --> Middleware
+    Controllers -->|"[FromKeyedServices]"| Service
+    Service --> Facade
+    Service --> Search
+    Service --> SorterFactory
+    SorterFactory --> Sorters
+    Facade --> Cache
+    Facade -->|"cache miss"| SqliteRepo
+    Facade -->|"cache miss"| MemRepo
+    SqliteRepo --> Sqlite
+    MemRepo --> InMem
+    Facade -->|"POST /refresh"| HttpProvider
+    HttpProvider --> External
+    Controllers -->|"POST /auth/token"| Jwt
+
+    APP -.->|depends on| DOMAIN
+    INFRA -.->|implements interfaces from| APP
+    API -.->|wires everything via DI| INFRA
+```
+
+Dependencies only flow **inward** on the class-reference axis (Api →
+Infrastructure → Application → Domain), even though at *runtime* the actual
+data flow goes the other way (a request comes into the Api layer and works
+its way down to Infrastructure and back up).
+
 - **Domain** has zero project references — it only contains `Brewery` (entity),
   `GeoCoordinate` (value object), enums, and custom exceptions. This keeps
   business concepts framework-agnostic and easy to unit test.
@@ -72,21 +135,29 @@ with querying/paging/sorting.
 ### d) Strategy pattern (pluggable sorting)
 Sorting is implemented as one class per sortable field:
 `NameSorter`, `CitySorter`, `DistanceSorter`, all implementing `IBrewerySorter`
-(exposing a `Field` and a `Sort(...)` method). `BrewerySorterFactory` builds a
-dictionary of `BrewerySortField -> IBrewerySorter` at startup (via DI's
-`IEnumerable<IBrewerySorter>` auto-collection) and resolves the correct
-strategy at request time:
+(exposing a `Field` and a `Sort(...)` method). Each sorter is registered as a
+**keyed singleton**, keyed by its `BrewerySortField` enum value:
 
 ```csharp
-_sorters = sorters.ToDictionary(s => s.Field);
-...
-public IBrewerySorter Resolve(BrewerySortField field) => _sorters[field];
+services.AddKeyedSingleton<IBrewerySorter, NameSorter>(BrewerySortField.Name);
+services.AddKeyedSingleton<IBrewerySorter, CitySorter>(BrewerySortField.City);
+services.AddKeyedSingleton<IBrewerySorter, DistanceSorter>(BrewerySortField.Distance);
+```
+
+`BrewerySorterFactory` resolves the correct strategy at request time straight
+from the keyed `IServiceProvider`, instead of building and holding its own
+dictionary:
+
+```csharp
+public IBrewerySorter Resolve(BrewerySortField field) =>
+    _serviceProvider.GetKeyedService<IBrewerySorter>(field)
+        ?? throw new NotSupportedException($"No sorter registered for {field}");
 ```
 
 **Why this matters:** adding a new sort field means adding a new class that
-implements the interface — the factory and DI container pick it up
-automatically. No existing code (switch statements, if-chains) needs editing,
-which satisfies the Open/Closed Principle.
+implements the interface and one `AddKeyedSingleton` registration — the
+factory needs no changes at all. No switch statements, no if-chains, which
+satisfies the Open/Closed Principle.
 
 ### e) Factory pattern
 `BrewerySorterFactory` is a textbook factory — it decouples "which sorter to
@@ -184,101 +255,55 @@ Controller (BreweriesController / BreweriesV2Controller)
   <- PagedResult<BreweryDto>
 ```
 
-## 5. Possible interview questions & answers
+### Diagram: the same request as a sequence
 
-**Q: Why did you choose a layered/clean architecture instead of a simpler
-single-project setup?**
-A: It enforces separation of concerns and dependency inversion — the Domain
-and Application layers have no knowledge of EF Core, HTTP, or ASP.NET Core.
-This makes business logic unit-testable in isolation and makes it easy to
-swap infrastructure (e.g., replace SQLite with Postgres, or Polly with
-another resilience library) without touching business rules.
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant Ctrl as BreweriesController
+    participant Svc as BreweryService
+    participant Facade as BreweryDataFacade
+    participant Cache as MemoryCacheService
+    participant Repo as IBreweryRepository
+    participant Search as BrewerySearchService
+    participant Sort as BrewerySorterFactory
 
-**Q: How do v1 and v2 endpoints share the same code but use different storage?**
-A: Through .NET 8 keyed DI. Both the SQLite and in-memory repositories (and
-the services/facades that consume them) are registered under distinct keys
-(`BreweryStorageKeys.Sqlite` / `.InMemory`). The versioned controllers each
-request their own keyed `IBreweryService` instance. Internally the key is
-propagated via the `[ServiceKey]` attribute so each layer resolves its own
-correctly-keyed dependency. This avoids duplicating any business logic.
+    C->>Ctrl: GET /api/v1/breweries?search=...&sortField=...
+    Ctrl->>Svc: GetBreweriesAsync(query)
+    Svc->>Facade: GetAllAsync()
+    Facade->>Cache: TryGet(key)
+    alt cache hit
+        Cache-->>Facade: cached brewery list
+    else cache miss (semaphore gate prevents duplicate loads)
+        Facade->>Repo: GetAllAsync()
+        Repo-->>Facade: brewery list
+        Facade->>Cache: Set(key, list, 10 min)
+    end
+    Facade-->>Svc: IReadOnlyList<Brewery>
+    Svc->>Search: Filter(all, query.Search)
+    Search-->>Svc: filtered list
+    Svc->>Sort: Resolve(query.SortField)
+    Sort-->>Svc: IBrewerySorter
+    Svc->>Svc: Sort(...), Skip/Take, map to BreweryDto
+    Svc-->>Ctrl: PagedResult<BreweryDto>
+    Ctrl-->>C: 200 OK (JSON)
+```
 
-**Q: What happens if two requests hit a cold cache at the same time?**
-A: `BreweryDataFacade` uses a shared static `SemaphoreSlim` gate. The first
-request acquires the lock and repopulates the cache; any other concurrent
-request blocks on the semaphore, and after acquiring it re-checks the cache
-(double-checked locking) — so only one request ever hits the repository, and
-the rest get the freshly cached result instead of a duplicate DB read.
+## 5. Testing
 
-**Q: How is data kept up to date?**
-A: It isn't automatic — a client calls `POST /breweries/refresh`, which
-triggers `BreweryDataFacade.RefreshFromExternalAsync`. This fetches
-everything from Open Brewery DB via `IBreweryProvider`, upserts it into the
-repository, stamps `LastRefreshedUtc`, and invalidates the cache so the next
-read gets fresh data. Nothing is stored until refresh is called at least once.
+- **`Elf.Brewery.Application.Tests`** — unit tests (xUnit + Moq) for the pure
+  business logic: `GeoCoordinate.DistanceKmTo`, each `IBrewerySorter`
+  implementation, `BrewerySorterFactory`, `BreweryService`, and
+  `GlobalExceptionHandler`'s exception-to-status-code mapping. No network, no
+  database, no web server — fast and fully isolated.
+- **`Elf.Brewery.Api.IntegrationTests`** — integration tests using
+  `WebApplicationFactory<Program>`, which boots the real app (real DI, real
+  middleware pipeline, real JWT auth) in-memory against an isolated temp
+  SQLite file per test class. Exercises the actual HTTP surface: login
+  success/failure, the 401 on missing auth, listing breweries, 404 on unknown
+  id, and query validation errors.
 
-**Q: How would you add a new sortable field, e.g. sort by state?**
-A: Create a new class (e.g., `StateSorter`) implementing `IBrewerySorter`
-with `Field = BrewerySortField.State`, register it in DI (or rely on
-assembly scanning if configured), add the enum value. The factory
-automatically picks it up via `IEnumerable<IBrewerySorter>` — no other code
-needs modification. This is the Open/Closed Principle in practice.
-
-**Q: How is resilience against the external Open Brewery DB API handled?**
-A: Via Polly policies attached to the typed `HttpClient`: 3 retries with
-exponential backoff for transient errors, and a circuit breaker that opens
-after 5 consecutive failures for 30 seconds, preventing the app from
-repeatedly calling a downed upstream service.
-
-**Q: How are errors surfaced to API consumers?**
-A: A single `GlobalExceptionHandler` implementing `IExceptionHandler` maps
-known exception types (`BreweryNotFoundException` -> 404, `ValidationException`
--> 400, `ExternalServiceException` -> 502, everything else -> 500) into RFC
-7807-compliant `ProblemDetails` responses, including a `traceId` for
-correlating with logs.
-
-**Q: How is distance calculated and why a value object?**
-A: `GeoCoordinate` is an immutable `readonly record struct` with a
-`DistanceKmTo` method implementing the haversine formula. Wrapping this in a
-value object keeps the math out of services/controllers, gives free
-value-based equality, and prevents accidental mutation.
-
-**Q: Why keyed singleton for in-memory repository but keyed scoped for SQLite?**
-A: The in-memory repository must be a singleton — its dictionary needs to
-persist across requests within the app's lifetime (since there's no real
-database backing it). The SQLite repository is scoped because it wraps an
-`EF Core DbContext`, which is not thread-safe and should be one-per-request
-(the standard scoped lifetime for `DbContext`).
-
-**Q: What are the known limitations, and how would you improve this for
-production?**
-A:
-- Single hardcoded user / no refresh tokens — would replace with a real
-  identity provider (e.g., ASP.NET Core Identity, Azure AD, or IdentityServer/
-  Duende) supporting multiple users and refresh token rotation.
-- `EnsureCreated()` instead of EF Core migrations — would switch to proper
-  migrations for schema versioning in production.
-- No automated tests — would add unit tests for services/sorters/mappers and
-  integration tests for controllers (e.g., using `WebApplicationFactory`).
-- In-memory cache is single-instance — would move to a distributed cache
-  (Redis) if scaling out to multiple instances.
-- No rate limiting on the refresh endpoint, which calls an external API —
-  would add throttling to avoid abuse.
-
-**Q: Why use a facade between the service and the repository instead of
-calling the repository directly from the service?**
-A: To keep caching/refresh/locking concerns separate from query/business
-logic (filtering, sorting, paging) in `BreweryService`. This follows the
-Single Responsibility Principle — `BreweryService` only orchestrates
-search/sort/paging/mapping, while `BreweryDataFacade` owns "how do I get the
-full list efficiently and safely."
-
-**Q: How is API versioning implemented, and why two versions with identical
-logic?**
-A: Via the `Asp.Versioning` package (`AddApiVersioning` + `AddApiExplorer`),
-producing separate Swagger docs per version. v1 and v2 share the exact same
-controller/service code — the *only* difference is which keyed repository
-(SQLite vs in-memory) gets resolved, demonstrating the keyed-DI pattern
-described above rather than maintaining duplicate business logic.
+Run everything with `dotnet test Elf.Brewery.sln`.
 
 ## 6. Project reference summary
 

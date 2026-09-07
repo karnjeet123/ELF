@@ -108,3 +108,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Exposes the implicit Program class so WebApplicationFactory<Program> can bootstrap it in tests.
+public partial class Program { }

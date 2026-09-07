@@ -13,6 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elf.Brewery.Domain", "src\E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elf.Brewery.Infrastructure", "src\Elf.Brewery.Infrastructure\Elf.Brewery.Infrastructure.csproj", "{DDF2BBC4-7AA5-451C-954F-FE1CC6BE5281}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C73D9B7F-BEEF-44A4-B426-572E3CD55647}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elf.Brewery.Application.Tests", "tests\Elf.Brewery.Application.Tests\Elf.Brewery.Application.Tests.csproj", "{56551B7F-9DB3-4285-AFE2-3174A50050ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elf.Brewery.Api.IntegrationTests", "tests\Elf.Brewery.Api.IntegrationTests\Elf.Brewery.Api.IntegrationTests.csproj", "{F7E4E9D2-A5C6-48D2-9970-E1117FC06F2B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,11 +44,21 @@ Global
 		{DDF2BBC4-7AA5-451C-954F-FE1CC6BE5281}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDF2BBC4-7AA5-451C-954F-FE1CC6BE5281}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDF2BBC4-7AA5-451C-954F-FE1CC6BE5281}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56551B7F-9DB3-4285-AFE2-3174A50050ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56551B7F-9DB3-4285-AFE2-3174A50050ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56551B7F-9DB3-4285-AFE2-3174A50050ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56551B7F-9DB3-4285-AFE2-3174A50050ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7E4E9D2-A5C6-48D2-9970-E1117FC06F2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7E4E9D2-A5C6-48D2-9970-E1117FC06F2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7E4E9D2-A5C6-48D2-9970-E1117FC06F2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7E4E9D2-A5C6-48D2-9970-E1117FC06F2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{73F5AE3C-2AEC-43C5-803C-F1BF20BD7A35} = {43B24BCC-C116-4AE6-B863-5C1DD4B93866}
 		{00059C5C-7B56-405B-A78F-726219900785} = {43B24BCC-C116-4AE6-B863-5C1DD4B93866}
 		{EE69A326-8599-4A91-988D-CF32E85EFBA3} = {43B24BCC-C116-4AE6-B863-5C1DD4B93866}
 		{DDF2BBC4-7AA5-451C-954F-FE1CC6BE5281} = {43B24BCC-C116-4AE6-B863-5C1DD4B93866}
+		{56551B7F-9DB3-4285-AFE2-3174A50050ED} = {C73D9B7F-BEEF-44A4-B426-572E3CD55647}
+		{F7E4E9D2-A5C6-48D2-9970-E1117FC06F2B} = {C73D9B7F-BEEF-44A4-B426-572E3CD55647}
 	EndGlobalSection
 EndGlobal
