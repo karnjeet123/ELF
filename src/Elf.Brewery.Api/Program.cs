@@ -20,9 +20,20 @@ builder.Host.UseSerilog((ctx, cfg) => cfg.ReadFrom.Configuration(ctx.Configurati
 );
 
 
-builder.Services.Configure<OpenBreweryDbOptions>(builder.Configuration.GetSection("OpenBreweryDb"));
-builder.Services.Configure<CacheOptions>(builder.Configuration.GetSection("Cache"));
-builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddOptions<OpenBreweryDbOptions>()
+    .Bind(builder.Configuration.GetSection("OpenBreweryDb"))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+    
+builder.Services.AddOptions<CacheOptions>()
+    .Bind(builder.Configuration.GetSection("Cache"))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+    
+builder.Services.AddOptions<JwtOptions>()
+    .Bind(builder.Configuration.GetSection("Jwt"))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 builder.Services.Configure<StaticUserOptions>(builder.Configuration.GetSection("StaticUser"));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
