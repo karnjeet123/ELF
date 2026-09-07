@@ -12,5 +12,5 @@ public sealed class OpenBreweryDbOptions
     public int PerPage { get; init; } = 200;
 
     [Range(1, int.MaxValue, ErrorMessage = "OpenBreweryDb:MaxPages must be at least 1.")]
-    public int MaxPages { get; init; } = 5;
+    public int MaxPages { get; init; } = 10;
 }

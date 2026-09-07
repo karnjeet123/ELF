@@ -6,6 +6,7 @@ using Elf.Brewery.Application.Contracts;
 using Elf.Brewery.Infrastructure.Caching;
 using Elf.Brewery.Infrastructure.Contracts;
 using Elf.Brewery.Infrastructure.Data;
+using Elf.Brewery.Infrastructure.External;
 using Elf.Brewery.Infrastructure.External.Models;
 using Elf.Brewery.Infrastructure.Mapper;
 using Elf.Brewery.Infrastructure.Security;
