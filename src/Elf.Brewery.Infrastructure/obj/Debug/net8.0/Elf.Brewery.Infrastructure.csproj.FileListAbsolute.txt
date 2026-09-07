@@ -15,3 +15,4 @@ D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\bin\
 D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\bin\Debug\net8.0\Elf.Brewery.Domain.pdb
 D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\obj\Debug\net8.0\Elf.Brewery.Infrastructure.csproj.AssemblyReference.cache
 D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\obj\Debug\net8.0\Elf.Brew.50EBE57A.Up2Date
+d:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Infrastructure\obj\Debug\net8.0\Elf.Brewery.Infrastructure.sourcelink.json

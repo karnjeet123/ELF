@@ -74,10 +74,13 @@ public sealed class BreweryService : IBreweryService
         return await _breweries.RefreshFromExternalAsync(ct);
     }
 
-    private static double? Distance(GeoCoordinate? origin, Brewery b)
+    private static double? Distance(GeoCoordinate? origin, Brewery brewery)
     {
-        return origin is { } o && b.Latitude.HasValue && b.Longitude.HasValue
-            ? Math.Round(o.DistanceKmTo(b.Latitude.Value, b.Longitude.Value), 2)
-            : null;
+        if (origin is null || brewery.Latitude is null || brewery.Longitude is null)
+            return null;
+
+        var distanceKm = origin.Value.DistanceKmTo(brewery.Latitude.Value, brewery.Longitude.Value);
+
+        return Math.Round(distanceKm, 2);
     }
 }

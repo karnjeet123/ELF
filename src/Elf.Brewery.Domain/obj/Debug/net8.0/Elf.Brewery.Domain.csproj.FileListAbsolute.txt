@@ -9,3 +9,4 @@ D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Domain\obj\Debug\ne
 D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Domain\obj\Debug\net8.0\refint\Elf.Brewery.Domain.dll
 D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Domain\obj\Debug\net8.0\Elf.Brewery.Domain.pdb
 D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Domain\obj\Debug\net8.0\ref\Elf.Brewery.Domain.dll
+d:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Domain\obj\Debug\net8.0\Elf.Brewery.Domain.sourcelink.json

@@ -9,3 +9,118 @@ SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NO
 2026-09-06 20:49:45.357 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/swagger/index.html - 200 null text/html;charset=utf-8 514.4779ms
 2026-09-06 20:49:46.017 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/swagger/v1/swagger.json - null null
 2026-09-06 20:49:46.491 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 474.1498ms
+2026-09-06 20:52:48.587 +05:30 [INF] Executed DbCommand (30ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2026-09-06 20:52:49.251 +05:30 [INF] User profile is available. Using 'C:\Users\KA40023030\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-09-06 20:52:49.509 +05:30 [INF] Now listening on: http://localhost:5214
+2026-09-06 20:52:49.514 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-09-06 20:52:49.515 +05:30 [INF] Hosting environment: Development
+2026-09-06 20:52:49.516 +05:30 [INF] Content root path: D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Api
+2026-09-06 20:52:50.567 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/swagger/index.html - null null
+2026-09-06 20:52:51.047 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/swagger/index.html - 200 null text/html;charset=utf-8 482.4477ms
+2026-09-06 20:52:51.639 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/swagger/v1/swagger.json - null null
+2026-09-06 20:52:52.103 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 464.6948ms
+2026-09-06 20:54:10.073 +05:30 [INF] Request starting HTTP/1.1 POST http://localhost:5214/api/auth/token - application/json 66
+2026-09-06 20:54:10.109 +05:30 [WRN] Failed to determine the https port for redirect.
+2026-09-06 20:54:10.389 +05:30 [INF] Executing endpoint 'AuthController.Token (Elf.Brewery.Api)'
+2026-09-06 20:54:10.453 +05:30 [INF] Route matched with {action = "Token", controller = "Auth"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Token(LoginRequest) on controller AuthController (Elf.Brewery.Api).
+2026-09-06 20:54:10.675 +05:30 [INF] Executing OkObjectResult, writing value of type 'TokenResponse'.
+2026-09-06 20:54:10.713 +05:30 [INF] Executed action AuthController.Token (Elf.Brewery.Api) in 251.3043ms
+2026-09-06 20:54:10.714 +05:30 [INF] Executed endpoint 'AuthController.Token (Elf.Brewery.Api)'
+2026-09-06 20:54:10.715 +05:30 [INF] Request finished HTTP/1.1 POST http://localhost:5214/api/auth/token - 200 null application/json; charset=utf-8 642.1614ms
+2026-09-06 20:54:44.673 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/api/v1/breweries - null null
+2026-09-06 20:54:44.815 +05:30 [INF] Executing endpoint 'BreweriesController.Get (Elf.Brewery.Api)'
+2026-09-06 20:54:44.859 +05:30 [INF] Route matched with {action = "Get", controller = "Breweries"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Get(BreweryQuery, System.Threading.CancellationToken) on controller BreweriesController (Elf.Brewery.Api).
+2026-09-06 20:54:44.992 +05:30 [INF] List breweries search=null sortBy="Name" page=1
+2026-09-06 20:54:45.001 +05:30 [INF] Cache miss for key: breweries:all:sqlite
+2026-09-06 20:54:45.002 +05:30 [INF] Cache miss for key: breweries:all:sqlite
+2026-09-06 20:54:45.613 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "b"."Id", "b"."BreweryType", "b"."City", "b"."Country", "b"."LastRefreshedUtc", "b"."Latitude", "b"."Longitude", "b"."Name", "b"."Phone", "b"."PostalCode", "b"."State", "b"."Street", "b"."WebsiteUrl"
+FROM "Breweries" AS "b"
+2026-09-06 20:54:45.698 +05:30 [INF] Cache set for key: breweries:all:sqlite
+2026-09-06 20:54:45.718 +05:30 [INF] Executing OkObjectResult, writing value of type 'PagedResult`1[[BreweryDto, Elf.Brewery.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-09-06 20:54:45.768 +05:30 [INF] Executed action BreweriesController.Get (Elf.Brewery.Api) in 907.1826ms
+2026-09-06 20:54:45.769 +05:30 [INF] Executed endpoint 'BreweriesController.Get (Elf.Brewery.Api)'
+2026-09-06 20:54:45.774 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/api/v1/breweries - 200 null application/json; charset=utf-8 1102.3315ms
+2026-09-06 20:55:06.587 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/api/v1/breweries?Search=Texas - null null
+2026-09-06 20:55:06.618 +05:30 [INF] Executing endpoint 'BreweriesController.Get (Elf.Brewery.Api)'
+2026-09-06 20:55:06.620 +05:30 [INF] Route matched with {action = "Get", controller = "Breweries"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Get(BreweryQuery, System.Threading.CancellationToken) on controller BreweriesController (Elf.Brewery.Api).
+2026-09-06 20:55:06.637 +05:30 [INF] List breweries search=Texas sortBy="Name" page=1
+2026-09-06 20:55:06.641 +05:30 [INF] Cache hit for key: breweries:all:sqlite
+2026-09-06 20:55:06.649 +05:30 [INF] Executing OkObjectResult, writing value of type 'PagedResult`1[[BreweryDto, Elf.Brewery.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-09-06 20:55:06.654 +05:30 [INF] Executed action BreweriesController.Get (Elf.Brewery.Api) in 27.8942ms
+2026-09-06 20:55:06.657 +05:30 [INF] Executed endpoint 'BreweriesController.Get (Elf.Brewery.Api)'
+2026-09-06 20:55:06.659 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/api/v1/breweries?Search=Texas - 200 null application/json; charset=utf-8 72.3999ms
+2026-09-06 20:55:46.113 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/swagger/v2/swagger.json - null null
+2026-09-06 20:55:46.141 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/swagger/v2/swagger.json - 200 null application/json;charset=utf-8 28.1803ms
+2026-09-06 20:56:07.632 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/api/v2/breweries - null null
+2026-09-06 20:56:07.650 +05:30 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-09-06 20:56:07.668 +05:30 [INF] AuthenticationScheme: Bearer was challenged.
+2026-09-06 20:56:07.673 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/api/v2/breweries - 401 0 null 42.2905ms
+2026-09-06 20:56:22.178 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/swagger/v1/swagger.json - null null
+2026-09-06 20:56:22.200 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 21.6185ms
+2026-09-06 20:56:40.839 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/swagger/v2/swagger.json - null null
+2026-09-06 20:56:40.855 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/swagger/v2/swagger.json - 200 null application/json;charset=utf-8 16.1134ms
+2026-09-06 20:57:00.457 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/api/v2/breweries - null null
+2026-09-06 20:57:00.461 +05:30 [INF] Executing endpoint 'BreweriesV2Controller.Get (Elf.Brewery.Api)'
+2026-09-06 20:57:00.474 +05:30 [INF] Route matched with {action = "Get", controller = "BreweriesV"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Get(BreweryQuery, System.Threading.CancellationToken) on controller BreweriesV2Controller (Elf.Brewery.Api).
+2026-09-06 20:57:00.483 +05:30 [INF] List breweries (in-memory) search=null sortBy="Name" page=1
+2026-09-06 20:57:00.484 +05:30 [INF] Cache miss for key: breweries:all:inmemory
+2026-09-06 20:57:00.485 +05:30 [INF] Cache miss for key: breweries:all:inmemory
+2026-09-06 20:57:00.488 +05:30 [INF] Cache set for key: breweries:all:inmemory
+2026-09-06 20:57:00.490 +05:30 [INF] Executing OkObjectResult, writing value of type 'PagedResult`1[[BreweryDto, Elf.Brewery.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-09-06 20:57:00.492 +05:30 [INF] Executed action BreweriesV2Controller.Get (Elf.Brewery.Api) in 16.7508ms
+2026-09-06 20:57:00.493 +05:30 [INF] Executed endpoint 'BreweriesV2Controller.Get (Elf.Brewery.Api)'
+2026-09-06 20:57:00.494 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/api/v2/breweries - 200 null application/json; charset=utf-8 37.2649ms
+2026-09-06 20:57:11.735 +05:30 [INF] Request starting HTTP/1.1 POST http://localhost:5214/api/v2/breweries/refresh - null 0
+2026-09-06 20:57:11.742 +05:30 [INF] Executing endpoint 'BreweriesV2Controller.Refresh (Elf.Brewery.Api)'
+2026-09-06 20:57:11.753 +05:30 [INF] Route matched with {action = "Refresh", controller = "BreweriesV"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Refresh(System.Threading.CancellationToken) on controller BreweriesV2Controller (Elf.Brewery.Api).
+2026-09-06 20:57:11.758 +05:30 [INF] Refreshing in-memory breweries from external provider
+2026-09-06 20:57:11.764 +05:30 [INF] Refreshing breweries from external provider
+2026-09-06 20:57:11.846 +05:30 [INF] Start processing HTTP request GET https://api.openbrewerydb.org/v1/breweries?per_page=200&page=1
+2026-09-06 20:57:11.885 +05:30 [INF] Sending HTTP request GET https://api.openbrewerydb.org/v1/breweries?per_page=200&page=1
+2026-09-06 20:57:14.542 +05:30 [INF] Received HTTP response headers after 2649.1247ms - 200
+2026-09-06 20:57:14.551 +05:30 [INF] End processing HTTP request after 2709.0007ms - 200
+2026-09-06 20:57:14.606 +05:30 [INF] Start processing HTTP request GET https://api.openbrewerydb.org/v1/breweries?per_page=200&page=2
+2026-09-06 20:57:14.608 +05:30 [INF] Sending HTTP request GET https://api.openbrewerydb.org/v1/breweries?per_page=200&page=2
+2026-09-06 20:57:15.841 +05:30 [INF] Received HTTP response headers after 1232.0665ms - 200
+2026-09-06 20:57:15.843 +05:30 [INF] End processing HTTP request after 1236.821ms - 200
+2026-09-06 20:57:15.903 +05:30 [INF] Start processing HTTP request GET https://api.openbrewerydb.org/v1/breweries?per_page=200&page=3
+2026-09-06 20:57:15.905 +05:30 [INF] Sending HTTP request GET https://api.openbrewerydb.org/v1/breweries?per_page=200&page=3
+2026-09-06 20:57:16.577 +05:30 [INF] Received HTTP response headers after 671.4498ms - 200
+2026-09-06 20:57:16.580 +05:30 [INF] End processing HTTP request after 677.6452ms - 200
+2026-09-06 20:57:16.751 +05:30 [INF] Start processing HTTP request GET https://api.openbrewerydb.org/v1/breweries?per_page=200&page=4
+2026-09-06 20:57:16.752 +05:30 [INF] Sending HTTP request GET https://api.openbrewerydb.org/v1/breweries?per_page=200&page=4
+2026-09-06 20:57:17.625 +05:30 [INF] Received HTTP response headers after 868.4234ms - 200
+2026-09-06 20:57:17.627 +05:30 [INF] End processing HTTP request after 875.6299ms - 200
+2026-09-06 20:57:17.696 +05:30 [INF] Start processing HTTP request GET https://api.openbrewerydb.org/v1/breweries?per_page=200&page=5
+2026-09-06 20:57:17.697 +05:30 [INF] Sending HTTP request GET https://api.openbrewerydb.org/v1/breweries?per_page=200&page=5
+2026-09-06 20:57:18.781 +05:30 [INF] Received HTTP response headers after 1082.7612ms - 200
+2026-09-06 20:57:18.782 +05:30 [INF] End processing HTTP request after 1086.2002ms - 200
+2026-09-06 20:57:18.904 +05:30 [INF] Fetched 1000 breweries from OpenBreweryDb
+2026-09-06 20:57:42.688 +05:30 [INF] Refreshed 1000 breweries from external provider
+2026-09-06 20:57:42.695 +05:30 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`2[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTimeOffset, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-09-06 20:57:42.701 +05:30 [INF] Executed action BreweriesV2Controller.Refresh (Elf.Brewery.Api) in 30947.0141ms
+2026-09-06 20:57:42.702 +05:30 [INF] Executed endpoint 'BreweriesV2Controller.Refresh (Elf.Brewery.Api)'
+2026-09-06 20:57:42.708 +05:30 [INF] Request finished HTTP/1.1 POST http://localhost:5214/api/v2/breweries/refresh - 200 null application/json; charset=utf-8 30973.0687ms
+2026-09-06 20:58:13.332 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/api/v2/breweries - null null
+2026-09-06 20:58:13.339 +05:30 [INF] Executing endpoint 'BreweriesV2Controller.Get (Elf.Brewery.Api)'
+2026-09-06 20:58:13.341 +05:30 [INF] Route matched with {action = "Get", controller = "BreweriesV"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Get(BreweryQuery, System.Threading.CancellationToken) on controller BreweriesV2Controller (Elf.Brewery.Api).
+2026-09-06 20:58:13.348 +05:30 [INF] List breweries (in-memory) search=null sortBy="Name" page=1
+2026-09-06 20:58:13.350 +05:30 [INF] Cache miss for key: breweries:all:inmemory
+2026-09-06 20:58:13.351 +05:30 [INF] Cache miss for key: breweries:all:inmemory
+2026-09-06 20:58:13.352 +05:30 [INF] Cache set for key: breweries:all:inmemory
+2026-09-06 20:58:13.353 +05:30 [INF] Executing OkObjectResult, writing value of type 'PagedResult`1[[BreweryDto, Elf.Brewery.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-09-06 20:58:13.355 +05:30 [INF] Executed action BreweriesV2Controller.Get (Elf.Brewery.Api) in 13.3499ms
+2026-09-06 20:58:13.356 +05:30 [INF] Executed endpoint 'BreweriesV2Controller.Get (Elf.Brewery.Api)'
+2026-09-06 20:58:13.357 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/api/v2/breweries - 200 null application/json; charset=utf-8 25.302ms
+2026-09-06 20:58:14.936 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5214/api/v2/breweries - null null
+2026-09-06 20:58:14.940 +05:30 [INF] Executing endpoint 'BreweriesV2Controller.Get (Elf.Brewery.Api)'
+2026-09-06 20:58:14.941 +05:30 [INF] Route matched with {action = "Get", controller = "BreweriesV"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Get(BreweryQuery, System.Threading.CancellationToken) on controller BreweriesV2Controller (Elf.Brewery.Api).
+2026-09-06 20:58:14.943 +05:30 [INF] List breweries (in-memory) search=null sortBy="Name" page=1
+2026-09-06 20:58:14.952 +05:30 [INF] Cache hit for key: breweries:all:inmemory
+2026-09-06 20:58:14.957 +05:30 [INF] Executing OkObjectResult, writing value of type 'PagedResult`1[[BreweryDto, Elf.Brewery.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-09-06 20:58:14.959 +05:30 [INF] Executed action BreweriesV2Controller.Get (Elf.Brewery.Api) in 17.21ms
+2026-09-06 20:58:14.961 +05:30 [INF] Executed endpoint 'BreweriesV2Controller.Get (Elf.Brewery.Api)'
+2026-09-06 20:58:14.961 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5214/api/v2/breweries - 200 null application/json; charset=utf-8 25.2068ms

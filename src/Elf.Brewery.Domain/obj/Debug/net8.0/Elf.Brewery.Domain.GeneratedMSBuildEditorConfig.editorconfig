@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Elf.Brewery.Domain
-build_property.ProjectDir = D:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Domain\
+build_property.ProjectDir = d:\OneDriveBackup\ELF\Assignment\Elf.Brewery\src\Elf.Brewery.Domain\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Elf.Brewery.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+89478482d26eefd7dcdaca822525bfa837e7a567")]
 [assembly: System.Reflection.AssemblyProductAttribute("Elf.Brewery.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Elf.Brewery.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
