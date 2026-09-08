@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Elf Brewery API - Architecture Diagrams</title>
+<style>
+  :root { --bg:#f6f8fa; --card:#fff; --border:#d0d7de; --text:#1f2328; --muted:#656d76; }
+  * { box-sizing: border-box; }
+  body { margin:0; padding:24px; background:var(--bg); color:var(--text);
+         font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  header { max-width:1200px; margin:0 auto 20px; }
+  h1 { font-size:22px; margin:0 0 6px; }
+  header p { margin:0; color:var(--muted); font-size:14px; }
+  .card { max-width:1200px; margin:0 auto 20px; background:var(--card);
+          border:1px solid var(--border); border-radius:8px; padding:18px; }
+  .card h2 { font-size:16px; margin:0 0 4px; }
+  .card p.desc { margin:0 0 14px; color:var(--muted); font-size:13px; }
+  .toolbar { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+  button { font:inherit; font-size:13px; padding:5px 12px; cursor:pointer;
+           background:#f6f8fa; border:1px solid var(--border); border-radius:6px; }
+  button:hover { background:#eef1f4; }
+  .viewport { overflow:auto; border:1px solid var(--border); border-radius:6px;
+              background:#fff; padding:12px; }
+  .diagram { transform-origin: top left; }
+  .offline { max-width:1200px; margin:0 auto 20px; padding:12px 16px; border-radius:8px;
+             background:#fff8c5; border:1px solid #d4a72c; font-size:13px; display:none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Elf Brewery API - Architecture Diagrams</h1>
+  <p>Open this file directly in a browser - no server needed. Diagram sources are also kept
+     as <code>.mmd</code> files in this folder for editing at
+     <a href="https://mermaid.live" target="_blank" rel="noopener">mermaid.live</a>.</p>
+</header>
+
+<div class="offline" id="offline">
+  <strong>Diagrams could not be rendered.</strong> This page loads Mermaid from a CDN, so it needs
+  an internet connection the first time. If you are offline, paste the contents of any
+  <code>.mmd</code> file into <a href="https://mermaid.live" target="_blank" rel="noopener">mermaid.live</a> instead.
+</div>
+
+<div class="card">
+  <h2>1. Clean Architecture layers and request flow</h2>
+  <p class="desc">Source: <code>01-layers.mmd</code> - how the four projects depend on each other.</p>
+  <div class="toolbar">
+    <button data-zoom="in" data-target="d1">Zoom in</button>
+    <button data-zoom="out" data-target="d1">Zoom out</button>
+    <button data-zoom="reset" data-target="d1">Reset</button>
+  </div>
+  <div class="viewport"><div class="diagram mermaid" id="d1">
+flowchart TB
+    Client(["Client / Swagger UI"])
+
+    subgraph API["Elf.Brewery.Api"]
+        Middleware["Middleware&lt;br/&gt;CorrelationId, SecurityHeaders,&lt;br/&gt;GlobalExceptionHandler"]
+        Policies["CORS, Rate limiter,&lt;br/&gt;HTTPS redirect, JWT auth"]
+        Controllers["Controllers&lt;br/&gt;BreweriesController v1 / v2,&lt;br/&gt;AuthController"]
+    end
+
+    subgraph APP["Elf.Brewery.Application"]
+        Service["BreweryService"]
+        Facade["BreweryDataFacade&lt;br/&gt;cache-aside + semaphore"]
+        Search["BrewerySearchService"]
+        SorterFactory["BrewerySorterFactory"]
+        Sorters["NameSorter / CitySorter / DistanceSorter"]
+    end
+
+    subgraph INFRA["Elf.Brewery.Infrastructure"]
+        Cache["MemoryCacheService"]
+        SqliteRepo["SqliteBreweryRepository&lt;br/&gt;EF Core"]
+        MemRepo["InMemoryBreweryRepository"]
+        HttpProvider["OpenBreweryDbProvider&lt;br/&gt;Polly retry + circuit breaker"]
+        Jwt["JwtTokenService"]
+    end
+
+    subgraph DOMAIN["Elf.Brewery.Domain"]
+        Entity["Brewery entity"]
+        Geo["GeoCoordinate"]
+        Exceptions["Domain exceptions"]
+    end
+
+    External(["Open Brewery DB&lt;br/&gt;public API"])
+    Sqlite[("brewery.db&lt;br/&gt;SQLite file")]
+    InMem[("In-memory dictionary")]
+
+    Client --&gt;|"HTTPS + JWT bearer token"| Middleware
+    Middleware --&gt; Policies
+    Policies --&gt; Controllers
+    Controllers --&gt;|"FromKeyedServices"| Service
+    Service --&gt; Facade
+    Service --&gt; Search
+    Service --&gt; SorterFactory
+    SorterFactory --&gt; Sorters
+    Facade --&gt; Cache
+    Facade --&gt;|"cache miss"| SqliteRepo
+    Facade --&gt;|"cache miss"| MemRepo
+    SqliteRepo --&gt; Sqlite
+    MemRepo --&gt; InMem
+    Facade --&gt;|"POST /refresh"| HttpProvider
+    HttpProvider --&gt; External
+    Controllers --&gt;|"POST /auth/token"| Jwt
+
+    APP -.-&gt;|depends on| DOMAIN
+    INFRA -.-&gt;|implements interfaces from| APP
+    API -.-&gt;|wires everything via DI| INFRA
+  </div></div>
+</div>
+
+<div class="card">
+  <h2>2. GET /breweries request sequence</h2>
+  <p class="desc">Source: <code>02-request-sequence.mmd</code> - cache-aside lookup, filtering, sorting, paging.</p>
+  <div class="toolbar">
+    <button data-zoom="in" data-target="d2">Zoom in</button>
+    <button data-zoom="out" data-target="d2">Zoom out</button>
+    <button data-zoom="reset" data-target="d2">Reset</button>
+  </div>
+  <div class="viewport"><div class="diagram mermaid" id="d2">
+sequenceDiagram
+    participant C as Client
+    participant Ctrl as BreweriesController
+    participant Svc as BreweryService
+    participant Facade as BreweryDataFacade
+    participant Cache as MemoryCacheService
+    participant Repo as IBreweryRepository
+    participant Search as BrewerySearchService
+    participant Sort as BrewerySorterFactory
+
+    C-&gt;&gt;Ctrl: GET /api/v1/breweries?search=...&amp;sortField=...
+    Ctrl-&gt;&gt;Svc: GetBreweriesAsync(query)
+    Svc-&gt;&gt;Facade: GetAllAsync()
+    Facade-&gt;&gt;Cache: TryGet(key)
+    alt cache hit
+        Cache--&gt;&gt;Facade: cached brewery list
+    else cache miss (semaphore gate prevents duplicate loads)
+        Facade-&gt;&gt;Repo: GetAllAsync()
+        Repo--&gt;&gt;Facade: brewery list
+        Facade-&gt;&gt;Cache: Set(key, list, 10 min)
+    end
+    Facade--&gt;&gt;Svc: IReadOnlyList of Brewery
+    Svc-&gt;&gt;Search: Filter(all, query.Search)
+    Search--&gt;&gt;Svc: filtered list
+    Svc-&gt;&gt;Sort: Resolve(query.SortField)
+    Sort--&gt;&gt;Svc: IBrewerySorter
+    Svc-&gt;&gt;Svc: Sort(...), Skip/Take, map to BreweryDto
+    Svc--&gt;&gt;Ctrl: PagedResult of BreweryDto
+    Ctrl--&gt;&gt;C: 200 OK (JSON)
+  </div></div>
+</div>
+
+<div class="card">
+  <h2>3. Middleware pipeline and security controls</h2>
+  <p class="desc">Source: <code>03-security-pipeline.mmd</code> - order matches <code>Program.cs</code>.</p>
+  <div class="toolbar">
+    <button data-zoom="in" data-target="d3">Zoom in</button>
+    <button data-zoom="out" data-target="d3">Zoom out</button>
+    <button data-zoom="reset" data-target="d3">Reset</button>
+  </div>
+  <div class="viewport"><div class="diagram mermaid" id="d3">
+flowchart TB
+    Req(["Incoming HTTP request"])
+
+    Health["MapHealthChecks /health"]
+    Exception["UseExceptionHandler&lt;br/&gt;maps exceptions to ProblemDetails"]
+    Correlation["CorrelationIdMiddleware&lt;br/&gt;adds X-Correlation-Id"]
+    Security["SecurityHeadersMiddleware&lt;br/&gt;X-Content-Type-Options: nosniff"]
+    Swagger{"Development?"}
+    SwaggerUI["UseSwagger + UseSwaggerUI"]
+    Hsts["UseHsts&lt;br/&gt;non-Development only"]
+    Redirect["UseHttpsRedirection&lt;br/&gt;308 to HTTPS"]
+    Routing["UseRouting"]
+    Cors["UseCors&lt;br/&gt;allow-list from Cors:AllowedOrigins"]
+    RateLimit["UseRateLimiter&lt;br/&gt;sliding window per client IP"]
+    AuthN["UseAuthentication&lt;br/&gt;JWT bearer"]
+    AuthZ["UseAuthorization"]
+    Endpoint["Controller endpoint"]
+
+    Rejected(["429 Too Many Requests"])
+    Unauthorized(["401 / 403"])
+    Ok(["200 OK - JSON"])
+
+    Req --&gt; Health
+    Health --&gt; Exception
+    Exception --&gt; Correlation
+    Correlation --&gt; Security
+    Security --&gt; Swagger
+    Swagger --&gt;|yes| SwaggerUI
+    Swagger --&gt;|no| Hsts
+    SwaggerUI --&gt; Hsts
+    Hsts --&gt; Redirect
+    Redirect --&gt; Routing
+    Routing --&gt; Cors
+    Cors --&gt; RateLimit
+    RateLimit --&gt;|over limit| Rejected
+    RateLimit --&gt;|within limit| AuthN
+    AuthN --&gt; AuthZ
+    AuthZ --&gt;|denied| Unauthorized
+    AuthZ --&gt;|allowed| Endpoint
+    Endpoint --&gt; Ok
+  </div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
+  } else {
+    document.getElementById('offline').style.display = 'block';
+  }
+
+  const zoom = {};
+  document.querySelectorAll('button[data-zoom]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.target;
+      const action = btn.dataset.zoom;
+      zoom[id] = zoom[id] ?? 1;
+      if (action === 'in') zoom[id] = Math.min(zoom[id] + 0.2, 4);
+      if (action === 'out') zoom[id] = Math.max(zoom[id] - 0.2, 0.3);
+      if (action === 'reset') zoom[id] = 1;
+      document.getElementById(id).style.transform = 'scale(' + zoom[id] + ')';
+    });
+  });
+</script>
+</body>
+</html>

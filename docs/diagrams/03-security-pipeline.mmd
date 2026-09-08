@@ -1,0 +1,43 @@
+%% Elf Brewery API - middleware pipeline and security controls
+%% Order matches app.Use... calls in src/Elf.Brewery.Api/Program.cs
+%% View: https://mermaid.live  |  or open docs/diagrams/index.html
+flowchart TB
+    Req(["Incoming HTTP request"])
+
+    Health["MapHealthChecks /health"]
+    Exception["UseExceptionHandler<br/>maps exceptions to ProblemDetails"]
+    Correlation["CorrelationIdMiddleware<br/>adds X-Correlation-Id"]
+    Security["SecurityHeadersMiddleware<br/>X-Content-Type-Options: nosniff"]
+    Swagger{"Development?"}
+    SwaggerUI["UseSwagger + UseSwaggerUI"]
+    Hsts["UseHsts<br/>non-Development only"]
+    Redirect["UseHttpsRedirection<br/>308 to HTTPS"]
+    Routing["UseRouting"]
+    Cors["UseCors<br/>allow-list from Cors:AllowedOrigins"]
+    RateLimit["UseRateLimiter<br/>sliding window per client IP"]
+    AuthN["UseAuthentication<br/>JWT bearer"]
+    AuthZ["UseAuthorization"]
+    Endpoint["Controller endpoint"]
+
+    Rejected(["429 Too Many Requests"])
+    Unauthorized(["401 / 403"])
+    Ok(["200 OK - JSON"])
+
+    Req --> Health
+    Health --> Exception
+    Exception --> Correlation
+    Correlation --> Security
+    Security --> Swagger
+    Swagger -->|yes| SwaggerUI
+    Swagger -->|no| Hsts
+    SwaggerUI --> Hsts
+    Hsts --> Redirect
+    Redirect --> Routing
+    Routing --> Cors
+    Cors --> RateLimit
+    RateLimit -->|over limit| Rejected
+    RateLimit -->|within limit| AuthN
+    AuthN --> AuthZ
+    AuthZ -->|denied| Unauthorized
+    AuthZ -->|allowed| Endpoint
+    Endpoint --> Ok

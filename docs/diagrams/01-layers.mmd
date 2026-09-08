@@ -1,0 +1,57 @@
+%% Elf Brewery API - Clean Architecture layers and request flow
+%% View: https://mermaid.live  |  or open docs/diagrams/index.html
+flowchart TB
+    Client(["Client / Swagger UI"])
+
+    subgraph API["Elf.Brewery.Api"]
+        Middleware["Middleware<br/>CorrelationId, SecurityHeaders,<br/>GlobalExceptionHandler"]
+        Policies["CORS, Rate limiter,<br/>HTTPS redirect, JWT auth"]
+        Controllers["Controllers<br/>BreweriesController v1 / v2,<br/>AuthController"]
+    end
+
+    subgraph APP["Elf.Brewery.Application"]
+        Service["BreweryService"]
+        Facade["BreweryDataFacade<br/>cache-aside + semaphore"]
+        Search["BrewerySearchService"]
+        SorterFactory["BrewerySorterFactory"]
+        Sorters["NameSorter / CitySorter / DistanceSorter"]
+    end
+
+    subgraph INFRA["Elf.Brewery.Infrastructure"]
+        Cache["MemoryCacheService"]
+        SqliteRepo["SqliteBreweryRepository<br/>EF Core"]
+        MemRepo["InMemoryBreweryRepository"]
+        HttpProvider["OpenBreweryDbProvider<br/>Polly retry + circuit breaker"]
+        Jwt["JwtTokenService"]
+    end
+
+    subgraph DOMAIN["Elf.Brewery.Domain"]
+        Entity["Brewery entity"]
+        Geo["GeoCoordinate"]
+        Exceptions["Domain exceptions"]
+    end
+
+    External(["Open Brewery DB<br/>public API"])
+    Sqlite[("brewery.db<br/>SQLite file")]
+    InMem[("In-memory dictionary")]
+
+    Client -->|"HTTPS + JWT bearer token"| Middleware
+    Middleware --> Policies
+    Policies --> Controllers
+    Controllers -->|"FromKeyedServices"| Service
+    Service --> Facade
+    Service --> Search
+    Service --> SorterFactory
+    SorterFactory --> Sorters
+    Facade --> Cache
+    Facade -->|"cache miss"| SqliteRepo
+    Facade -->|"cache miss"| MemRepo
+    SqliteRepo --> Sqlite
+    MemRepo --> InMem
+    Facade -->|"POST /refresh"| HttpProvider
+    HttpProvider --> External
+    Controllers -->|"POST /auth/token"| Jwt
+
+    APP -.->|depends on| DOMAIN
+    INFRA -.->|implements interfaces from| APP
+    API -.->|wires everything via DI| INFRA

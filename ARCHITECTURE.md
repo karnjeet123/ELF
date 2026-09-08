@@ -19,18 +19,23 @@ Elf.Brewery.Domain         <-- Entities, value objects, enums, exceptions (no de
 
 ### Diagram: layers and request flow
 
+> Also available as a standalone file:
+> [`docs/diagrams/01-layers.mmd`](docs/diagrams/01-layers.mmd) — see
+> [`docs/diagrams/README.md`](docs/diagrams/README.md) for a zoomable viewer.
+
 ```mermaid
 flowchart TB
     Client(["Client / Swagger UI"])
 
     subgraph API["Elf.Brewery.Api"]
-        Controllers["Controllers\n(BreweriesController v1 / v2, AuthController)"]
-        Middleware["Middleware\n(CorrelationId, GlobalExceptionHandler)"]
+        Middleware["Middleware<br/>CorrelationId, SecurityHeaders,<br/>GlobalExceptionHandler"]
+        Policies["CORS, Rate limiter,<br/>HTTPS redirect, JWT auth"]
+        Controllers["Controllers<br/>BreweriesController v1 / v2,<br/>AuthController"]
     end
 
     subgraph APP["Elf.Brewery.Application"]
         Service["BreweryService"]
-        Facade["BreweryDataFacade\n(cache-aside + semaphore)"]
+        Facade["BreweryDataFacade<br/>cache-aside + semaphore"]
         Search["BrewerySearchService"]
         SorterFactory["BrewerySorterFactory"]
         Sorters["NameSorter / CitySorter / DistanceSorter"]
@@ -38,9 +43,9 @@ flowchart TB
 
     subgraph INFRA["Elf.Brewery.Infrastructure"]
         Cache["MemoryCacheService"]
-        SqliteRepo["SqliteBreweryRepository\n(EF Core)"]
+        SqliteRepo["SqliteBreweryRepository<br/>EF Core"]
         MemRepo["InMemoryBreweryRepository"]
-        HttpProvider["OpenBreweryDbProvider\n(Polly retry + circuit breaker)"]
+        HttpProvider["OpenBreweryDbProvider<br/>Polly retry + circuit breaker"]
         Jwt["JwtTokenService"]
     end
 
@@ -50,13 +55,14 @@ flowchart TB
         Exceptions["Domain exceptions"]
     end
 
-    External(["Open Brewery DB\n(public API)"])
-    Sqlite[("brewery.db\n(SQLite file)")]
+    External(["Open Brewery DB<br/>public API"])
+    Sqlite[("brewery.db<br/>SQLite file")]
     InMem[("In-memory dictionary")]
 
-    Client -->|"HTTP + JWT bearer token"| Controllers
-    Controllers --> Middleware
-    Controllers -->|"[FromKeyedServices]"| Service
+    Client -->|"HTTPS + JWT bearer token"| Middleware
+    Middleware --> Policies
+    Policies --> Controllers
+    Controllers -->|"FromKeyedServices"| Service
     Service --> Facade
     Service --> Search
     Service --> SorterFactory
@@ -238,6 +244,64 @@ bound from `appsettings.json` sections in `Program.cs`.
 | API docs | Swagger/Swashbuckle, one doc per API version |
 | Resilience | Polly retry + circuit breaker on the external HTTP client |
 | Caching | In-memory (`IMemoryCache`), 10-minute absolute expiration, high priority |
+| CORS | Named policy with an explicit origin allow-list from `Cors:AllowedOrigins` |
+| Rate limiting | Sliding-window limiter partitioned per client IP, returns `429` |
+| Transport security | `UseHttpsRedirection` (308) everywhere, HSTS outside Development |
+| Secrets | `Jwt:SigningKey` and `StaticUser:Password` come from user secrets / environment, never `appsettings.json` |
+
+### Diagram: middleware pipeline and security controls
+
+> Also available as a standalone file:
+> [`docs/diagrams/03-security-pipeline.mmd`](docs/diagrams/03-security-pipeline.mmd).
+
+```mermaid
+flowchart TB
+    Req(["Incoming HTTP request"])
+
+    Health["MapHealthChecks /health"]
+    Exception["UseExceptionHandler<br/>maps exceptions to ProblemDetails"]
+    Correlation["CorrelationIdMiddleware<br/>adds X-Correlation-Id"]
+    Security["SecurityHeadersMiddleware<br/>X-Content-Type-Options: nosniff"]
+    Swagger{"Development?"}
+    SwaggerUI["UseSwagger + UseSwaggerUI"]
+    Hsts["UseHsts<br/>non-Development only"]
+    Redirect["UseHttpsRedirection<br/>308 to HTTPS"]
+    Routing["UseRouting"]
+    Cors["UseCors<br/>allow-list from Cors:AllowedOrigins"]
+    RateLimit["UseRateLimiter<br/>sliding window per client IP"]
+    AuthN["UseAuthentication<br/>JWT bearer"]
+    AuthZ["UseAuthorization"]
+    Endpoint["Controller endpoint"]
+
+    Rejected(["429 Too Many Requests"])
+    Unauthorized(["401 / 403"])
+    Ok(["200 OK - JSON"])
+
+    Req --> Health
+    Health --> Exception
+    Exception --> Correlation
+    Correlation --> Security
+    Security --> Swagger
+    Swagger -->|yes| SwaggerUI
+    Swagger -->|no| Hsts
+    SwaggerUI --> Hsts
+    Hsts --> Redirect
+    Redirect --> Routing
+    Routing --> Cors
+    Cors --> RateLimit
+    RateLimit -->|over limit| Rejected
+    RateLimit -->|within limit| AuthN
+    AuthN --> AuthZ
+    AuthZ -->|denied| Unauthorized
+    AuthZ -->|allowed| Endpoint
+    Endpoint --> Ok
+```
+
+Because this is a JSON API rather than a server-rendered site, only the headers
+that actually protect API responses are applied globally (`nosniff`, plus HSTS
+in production). Browser-page headers such as CSP, `X-Frame-Options`,
+`Referrer-Policy` and `Permissions-Policy` belong on whatever host serves the
+frontend HTML, since response headers only protect the origin that returns them.
 
 ## 4. Data flow (typical GET /breweries request)
 
@@ -256,6 +320,9 @@ Controller (BreweriesController / BreweriesV2Controller)
 ```
 
 ### Diagram: the same request as a sequence
+
+> Also available as a standalone file:
+> [`docs/diagrams/02-request-sequence.mmd`](docs/diagrams/02-request-sequence.mmd).
 
 ```mermaid
 sequenceDiagram

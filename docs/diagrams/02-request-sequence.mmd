@@ -1,0 +1,31 @@
+%% Elf Brewery API - GET /api/v1/breweries request sequence
+%% View: https://mermaid.live  |  or open docs/diagrams/index.html
+sequenceDiagram
+    participant C as Client
+    participant Ctrl as BreweriesController
+    participant Svc as BreweryService
+    participant Facade as BreweryDataFacade
+    participant Cache as MemoryCacheService
+    participant Repo as IBreweryRepository
+    participant Search as BrewerySearchService
+    participant Sort as BrewerySorterFactory
+
+    C->>Ctrl: GET /api/v1/breweries?search=...&sortField=...
+    Ctrl->>Svc: GetBreweriesAsync(query)
+    Svc->>Facade: GetAllAsync()
+    Facade->>Cache: TryGet(key)
+    alt cache hit
+        Cache-->>Facade: cached brewery list
+    else cache miss (semaphore gate prevents duplicate loads)
+        Facade->>Repo: GetAllAsync()
+        Repo-->>Facade: brewery list
+        Facade->>Cache: Set(key, list, 10 min)
+    end
+    Facade-->>Svc: IReadOnlyList of Brewery
+    Svc->>Search: Filter(all, query.Search)
+    Search-->>Svc: filtered list
+    Svc->>Sort: Resolve(query.SortField)
+    Sort-->>Svc: IBrewerySorter
+    Svc->>Svc: Sort(...), Skip/Take, map to BreweryDto
+    Svc-->>Ctrl: PagedResult of BreweryDto
+    Ctrl-->>C: 200 OK (JSON)
