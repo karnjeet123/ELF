@@ -9,6 +9,7 @@ using Elf.Brewery.Infrastructure.Data;
 using Elf.Brewery.Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Serilog;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +35,10 @@ builder.Services.AddOptions<JwtOptions>()
     .Bind(builder.Configuration.GetSection("Jwt"))
     .ValidateDataAnnotations()
     .ValidateOnStart();
-builder.Services.Configure<StaticUserOptions>(builder.Configuration.GetSection("StaticUser"));
+builder.Services.AddOptions<StaticUserOptions>()
+    .Bind(builder.Configuration.GetSection("StaticUser"))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -56,6 +60,51 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
+
+const string CorsPolicyName = "DefaultCorsPolicy";
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(CorsPolicyName, policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+builder.Services.AddHsts(options =>
+{
+    options.MaxAge = TimeSpan.FromDays(365);
+    options.IncludeSubDomains = true;
+    options.Preload = true;
+});
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+});
+const string ApiRateLimitPolicyName = "ApiRateLimitPolicy";
+var permitLimit = builder.Configuration.GetValue<int>("RateLimiting:PermitLimit", 100);
+var windowSeconds = builder.Configuration.GetValue<int>("RateLimiting:WindowSeconds", 60);
+var segmentsPerWindow = builder.Configuration.GetValue<int>("RateLimiting:SegmentsPerWindow", 6);
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy(ApiRateLimitPolicyName, context =>
+    {
+        var clientIpAddress = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        return RateLimitPartition.GetSlidingWindowLimiter(clientIpAddress, _ => new SlidingWindowRateLimiterOptions
+        {
+            PermitLimit = permitLimit,
+            Window = TimeSpan.FromSeconds(windowSeconds),
+            SegmentsPerWindow = segmentsPerWindow,
+            QueueLimit = 0
+        });
+    });
+});
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
@@ -87,6 +136,7 @@ await app.Services.InitializeInfrastructureDatabaseAsync();
 app.MapHealthChecks("/health");
 app.UseExceptionHandler();
 app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseMiddleware<SecurityHeadersMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -100,12 +150,21 @@ if (app.Environment.IsDevelopment())
     app.MapGet("/", () => Results.Redirect("/swagger"));
 }
 
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
+
 app.UseHttpsRedirection();
+
+app.UseRouting();
+app.UseCors(CorsPolicyName);
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllers().RequireRateLimiting(ApiRateLimitPolicyName);
 
 app.Run();
 

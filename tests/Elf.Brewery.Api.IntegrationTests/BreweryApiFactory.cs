@@ -22,6 +22,11 @@ public sealed class BreweryApiFactory : WebApplicationFactory<Program>
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["ConnectionStrings:BreweryDb"] = $"Data Source={_dbPath}",
+                // Supplied explicitly so the suite never depends on a developer's local
+                // user-secrets store and stays runnable on CI.
+                ["Jwt:SigningKey"] = "integration-tests-only-signing-key-32-chars-minimum",
+                ["StaticUser:Username"] = "admin@elfbeauty.com",
+                ["StaticUser:Password"] = "admin@123",
             });
         });
     }
