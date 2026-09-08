@@ -134,7 +134,7 @@ So the key travels controller → service → facade → repository. The two ver
 - **Sorting** uses one class per sort field (`NameSorter`, `CitySorter`, `DistanceSorter`), picked at runtime by a factory that resolves the right one from keyed DI. Adding a new sort field means adding a new class, not editing a big switch statement.
 - **Caching**: data goes through `BreweryDataFacade`, which caches the full brewery list in memory for 10 minutes (configurable) and uses a semaphore so a cold cache doesn't trigger several parallel database reads at once (the classic "cache stampede" problem).
 - **Resilience**: the Open Brewery DB HTTP client retries three times with exponential backoff and trips a circuit breaker after five failures, so a flaky upstream API doesn't take the whole app down with it.
-- **Error handling**: unhandled exceptions come back as a standard `ProblemDetails` JSON response via a single `GlobalExceptionHandler`, so every error looks the same shape to a client, and internal exception details never leak out in a 500 response.
+- **Error handling**: unhandled exceptions come back as a standard `ProblemDetails` JSON response via a single `GlobalExceptionHandler`, so every error looks the same shape to a client, and internal exception details never leak out in a 500 response. Upstream problems (Open Brewery DB returning a non-success status, timing out, being unreachable, or returning malformed JSON) are translated into `ExternalServiceException` and surface as `502 Bad Gateway` rather than a generic 500.
 - **Config validation**: settings like the JWT signing key or the Open Brewery DB URL are validated at startup (`ValidateOnStart()`), so a bad config fails immediately with a clear error instead of failing later at some random request.
 - **Observability**: every request gets a correlation id (so you can trace one request through the logs), and logs go to both the console and a rolling daily file under `logs/`.
 
@@ -143,7 +143,7 @@ So the key travels controller → service → facade → repository. The two ver
 There are two test projects under `tests/`:
 
 - **`Elf.Brewery.Application.Tests`** — unit tests with xUnit + Moq. Covers the pure logic: distance calculation, each sorter, the sorter factory, `BreweryService`, and the global exception handler's status-code mapping. No network, no database, no web server involved.
-- **`Elf.Brewery.Api.IntegrationTests`** — integration tests using `WebApplicationFactory<Program>`, which boots the real app (real DI, real middleware, real auth) in-memory against an isolated temp SQLite file. Covers login, the auth-required 401 case, listing breweries, 404 on unknown id, and basic validation errors — all through real HTTP calls, no mocking of the pipeline itself.
+- **`Elf.Brewery.Api.IntegrationTests`** — integration tests using `WebApplicationFactory<Program>`, which boots the real app (real DI, real middleware, real auth) in-memory against an isolated temp SQLite file. The external Open Brewery DB provider is replaced with a stub, so the suite is deterministic and runs offline. Covers login, the auth-required 401 case, both API versions (v1/SQLite and v2/in-memory), the SQLite refresh-then-read round-trip, search, the city filter, search and city combined, distance sorting, autocomplete, and validation errors — all through real HTTP calls, no mocking of the pipeline itself.
 
 Run everything with:
 
@@ -153,14 +153,14 @@ dotnet test Elf.Brewery.sln
 
 ### Code coverage (project-wise)
 
-Generated via `dotnet test --collect:"XPlat Code Coverage"` + `reportgenerator`. Overall line coverage is **64.8%** across 33 tests (25 unit + 8 integration). Breakdown by project:
+Generated via `dotnet test --collect:"XPlat Code Coverage"` + `reportgenerator`. The figures below were measured across 43 tests (25 unit + 18 integration). Breakdown by project:
 
-| Project | Line coverage | Notes |
-|---|---|---|
-| `Elf.Brewery.Api` | 74% | Controllers hit via integration tests; `BreweriesController` (v1/Sqlite) is 0% since tests exercise v2 (in-memory) only; Swagger filter classes untested (cosmetic, not logic) |
-| `Elf.Brewery.Application` | 73.3% | Sorters, factory, and `BreweryService` well covered; `BrewerySearchService` (20.8%) and DTO mapping paths are the main gaps |
-| `Elf.Brewery.Domain` | 69.2% | `GeoCoordinate` and exceptions at 100%; `Brewery` entity itself is mostly just properties (38.4%, largely auto-property getters/setters that don't need explicit tests) |
-| `Elf.Brewery.Infrastructure` | 47.3% | JWT, options, EF `DbContext`, and cache service well covered; `SqliteBreweryRepository` (0%) and `BreweryMapper` (0%) aren't exercised yet — the SQLite path is only reachable via `BreweriesController` (v1), which the integration tests don't currently target |
+| Project | Notes |
+|---|---|
+| `Elf.Brewery.Api` | Controllers hit via integration tests; both `BreweriesController` (v1/Sqlite) and `BreweriesV2Controller` (v2/in-memory) are exercised. Swagger filter classes untested (cosmetic, not logic) |
+| `Elf.Brewery.Application` | Sorters, factory, `BreweryService` and `BrewerySearchService` (search, city filter, combined) covered |
+| `Elf.Brewery.Domain` | `GeoCoordinate` and exceptions at 100%; the `Brewery` entity is mostly auto-properties that don't need explicit tests |
+| `Elf.Brewery.Infrastructure` | JWT, options, EF `DbContext`, cache service, `SqliteBreweryRepository` and `BreweryMapper` all exercised via the v1 refresh-then-read tests |
 
 To regenerate this locally:
 

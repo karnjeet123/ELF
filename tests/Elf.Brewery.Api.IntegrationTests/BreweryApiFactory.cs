@@ -1,9 +1,63 @@
+using Elf.Brewery.Application.Contracts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using DomainBrewery = Elf.Brewery.Domain.Entities.Brewery;
 
 namespace Elf.Brewery.Api.IntegrationTests;
+
+/// <summary>
+/// Returns a fixed brewery list instead of calling Open Brewery DB, so the suite is
+/// deterministic and runs offline.
+/// </summary>
+public sealed class StubBreweryProvider : IBreweryProvider
+{
+    public static readonly IReadOnlyList<DomainBrewery> Breweries = new[]
+    {
+        new DomainBrewery
+        {
+            Id = "test-1",
+            Name = "Cascade Brewing",
+            City = "Portland",
+            State = "Oregon",
+            Country = "United States",
+            Phone = "(503) 265-8603",
+            BreweryType = "micro",
+            Latitude = 45.5122,
+            Longitude = -122.6587
+        },
+        new DomainBrewery
+        {
+            Id = "test-2",
+            Name = "Alpine Beer Company",
+            City = "Alpine",
+            State = "California",
+            Country = "United States",
+            Phone = "(619) 445-2337",
+            BreweryType = "micro",
+            Latitude = 32.8351,
+            Longitude = -116.7664
+        },
+        new DomainBrewery
+        {
+            Id = "test-3",
+            Name = "Portland Brewing",
+            City = "Seattle",
+            State = "Washington",
+            Country = "United States",
+            Phone = null,
+            BreweryType = "regional",
+            Latitude = null,
+            Longitude = null
+        }
+    };
+
+    public Task<IReadOnlyList<DomainBrewery>> FetchAllAsync(CancellationToken ct) =>
+        Task.FromResult(Breweries);
+}
 
 /// <summary>
 /// Boots the real API pipeline (DI, auth, exception handling, versioning) in-process,
@@ -28,6 +82,13 @@ public sealed class BreweryApiFactory : WebApplicationFactory<Program>
                 ["StaticUser:Username"] = "admin@elfbeauty.com",
                 ["StaticUser:Password"] = "admin@123",
             });
+        });
+
+        builder.ConfigureServices(services =>
+        {
+            // Replace the real HTTP-backed provider so refresh never hits the network.
+            services.RemoveAll<IBreweryProvider>();
+            services.AddSingleton<IBreweryProvider, StubBreweryProvider>();
         });
     }
 
