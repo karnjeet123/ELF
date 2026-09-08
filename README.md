@@ -24,15 +24,19 @@ dotnet run
 
 The app starts on http://localhost:5214 and opens Swagger. The SQLite file (`brewery.db`) is created on first start if it isn't there yet.
 
-Before the first request, set a JWT signing key. It is blank in `appsettings.json` on purpose so nobody commits a real one:
+Before the first request, set the JWT signing key and the login password. Both are kept out of `appsettings.json` on purpose so nobody commits a real secret:
 
 ```
+cd src/Elf.Brewery.Api
 dotnet user-secrets set "Jwt:SigningKey" "some-long-random-string-at-least-32-chars"
+dotnet user-secrets set "StaticUser:Password" "admin@123"
 ```
+
+The app fails fast at startup with a clear message if either is missing.
 
 ## Getting a token
 
-Every brewery endpoint needs a bearer token. There is one hardcoded user in `appsettings.json` under `StaticUser`.
+Every brewery endpoint needs a bearer token. There is one hardcoded user: the username lives in `appsettings.json` under `StaticUser:Username`, and the password comes from user secrets (set it as shown above).
 
 ```
 POST /api/auth/token
@@ -47,11 +51,13 @@ Both versions expose the same routes. Pick the version in the Swagger dropdown.
 
 | Route | What it does |
 |---|---|
-| `GET /api/v{n}/breweries` | List with `search`, `sortField`, `direction`, `pageNumber`, `pageSize`, `latitude`, `longitude` |
+| `GET /api/v{n}/breweries` | List with `search`, `city`, `sortField`, `direction`, `pageNumber`, `pageSize`, `latitude`, `longitude` |
 | `GET /api/v{n}/breweries/{id}` | Single brewery, 404 if it doesn't exist |
 | `GET /api/v{n}/breweries/autocomplete?term=&limit=` | Name suggestions, term needs at least 2 characters |
 | `GET /api/v{n}/breweries/cities` | Distinct city names |
 | `POST /api/v{n}/breweries/refresh` | Re-fetches everything from Open Brewery DB |
+
+`search` is a free-text term matched against name, city, state and brewery type. `city` is an exact-match filter. They combine as an AND, so `?search=brewing&city=Portland` returns Portland breweries whose details mention "brewing". `pageSize` is capped at 100.
 
 If you pass `latitude` and `longitude`, each result gets a `distanceKm` and you can sort by distance. Leave them out and that field comes back null.
 
@@ -182,3 +188,4 @@ Then open `coverage-report\index.html` for the full drill-down. Both `coverage-r
 - One hardcoded user and no refresh tokens. Fine for an assignment, not for anything real.
 - The SQLite schema is created with `EnsureCreated`, so there are no migrations.
 - No CI pipeline yet to run the tests automatically on push.
+- `OpenBreweryDb:MaxPages` is set to 5 (with `PerPage: 200`), so a refresh pulls at most 1000 breweries rather than the full upstream dataset. This keeps the assignment fast to run and demo. A warning is logged when the cap is hit; raise `MaxPages` in `appsettings.json` to pull more.

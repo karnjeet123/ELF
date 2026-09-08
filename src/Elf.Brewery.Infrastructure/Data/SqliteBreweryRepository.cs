@@ -19,8 +19,11 @@ public sealed class SqliteBreweryRepository : IBreweryRepository
     }
 
     public Task<DomainBrewery?> GetByIdAsync(string id, CancellationToken ct)
-        => _db.Breweries.AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == id, ct);
+    {
+        return _db.Breweries.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id, ct);
+    }
+
 
     public async Task UpsertRangeAsync(IEnumerable<DomainBrewery> items, CancellationToken ct)
     {
@@ -44,7 +47,7 @@ public sealed class SqliteBreweryRepository : IBreweryRepository
 
     public Task<DateTimeOffset?> GetLastRefreshUtcAsync(CancellationToken ct)
     {
-        return  _db.Breweries.MaxAsync(x => (DateTimeOffset?)x.LastRefreshedUtc, ct); 
+        return _db.Breweries.MaxAsync(x => (DateTimeOffset?)x.LastRefreshedUtc, ct);
     }
-        
+
 }

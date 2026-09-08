@@ -25,12 +25,12 @@ builder.Services.AddOptions<OpenBreweryDbOptions>()
     .Bind(builder.Configuration.GetSection("OpenBreweryDb"))
     .ValidateDataAnnotations()
     .ValidateOnStart();
-    
+
 builder.Services.AddOptions<CacheOptions>()
     .Bind(builder.Configuration.GetSection("Cache"))
     .ValidateDataAnnotations()
     .ValidateOnStart();
-    
+
 builder.Services.AddOptions<JwtOptions>()
     .Bind(builder.Configuration.GetSection("Jwt"))
     .ValidateDataAnnotations()

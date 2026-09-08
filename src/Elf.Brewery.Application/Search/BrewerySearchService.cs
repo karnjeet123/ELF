@@ -9,18 +9,28 @@ namespace Elf.Brewery.Application.Search;
 
 public sealed class BrewerySearchService : IBrewerySearchService
 {
-    public IEnumerable<DomainBrewery> Filter(IEnumerable<DomainBrewery> source, string? term)
+    public IEnumerable<DomainBrewery> Filter(IEnumerable<DomainBrewery> source, string? term, string? city = null)
     {
-        if (string.IsNullOrWhiteSpace(term))
+        var result = source;
+
+        if (!string.IsNullOrWhiteSpace(city))
         {
-            return source;
+            var trimmedCity = city.Trim();
+            result = result.Where(b =>
+                string.Equals(b.City, trimmedCity, StringComparison.OrdinalIgnoreCase));
         }
-        term = term.Trim();
-        return source.Where(b =>
-     (b.Name?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false)
-     || (b.City?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false)
-     || (b.State?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false)
-     || (b.BreweryType?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false));
+
+        if (!string.IsNullOrWhiteSpace(term))
+        {
+            var trimmedTerm = term.Trim();
+            result = result.Where(b =>
+                (b.Name?.Contains(trimmedTerm, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (b.City?.Contains(trimmedTerm, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (b.State?.Contains(trimmedTerm, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (b.BreweryType?.Contains(trimmedTerm, StringComparison.OrdinalIgnoreCase) ?? false));
+        }
+
+        return result;
     }
 
     public IReadOnlyList<AutocompleteItemDto> Suggest(IEnumerable<DomainBrewery> source, string? term, int limit)

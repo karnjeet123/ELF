@@ -40,7 +40,7 @@ public sealed class BreweryService : IBreweryService
     {
         var all = await _breweries.GetAllAsync(ct);
 
-        var filtered = _search.Filter(all, query.Search);
+        var filtered = _search.Filter(all, query.Search, query.City);
 
         var sortField = query.SortField ?? BrewerySortField.Name;
         var sorted = _sorterFactory.Resolve(sortField).Sort(filtered, query).ToList();
