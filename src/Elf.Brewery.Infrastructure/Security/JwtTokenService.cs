@@ -54,14 +54,25 @@ public sealed class JwtTokenService : ITokenService
 
     public bool ValidateCredentials(string username, string password)
     {
+        // Both comparisons are evaluated (no short-circuit) so a wrong username and a wrong
+        // password take the same path.
+        var usernameMatches = FixedEquals(username, _userOptions.Username);
+        var passwordMatches = FixedEquals(password, _userOptions.Password);
 
-
-        return FixedEquals(username, _userOptions.Username)
-            && FixedEquals(password, _userOptions.Password);
+        return usernameMatches && passwordMatches;
     }
 
-    private static bool FixedEquals(string a, string b)
-    => CryptographicOperations.FixedTimeEquals(
-           Encoding.UTF8.GetBytes(a), Encoding.UTF8.GetBytes(b));
+    /// <summary>
+    /// Compares two strings in constant time. Both sides are hashed first because
+    /// <see cref="CryptographicOperations.FixedTimeEquals"/> throws on a length mismatch,
+    /// which would otherwise leak the expected length through timing and exceptions.
+    /// SHA-256 always produces 32 bytes, so the comparison length never varies.
+    /// </summary>
+    private static bool FixedEquals(string? a, string? b)
+    {
+        var hashA = SHA256.HashData(Encoding.UTF8.GetBytes(a ?? string.Empty));
+        var hashB = SHA256.HashData(Encoding.UTF8.GetBytes(b ?? string.Empty));
 
+        return CryptographicOperations.FixedTimeEquals(hashA, hashB);
+    }
 }

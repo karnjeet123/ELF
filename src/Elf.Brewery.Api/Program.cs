@@ -8,7 +8,10 @@ using Elf.Brewery.Infrastructure;
 using Elf.Brewery.Infrastructure.Data;
 using Elf.Brewery.Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,19 +44,23 @@ builder.Services.AddOptions<StaticUserOptions>()
     .ValidateOnStart();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+    .AddJwtBearer();
+
+// Bound from the validated JwtOptions rather than re-reading configuration, so a missing or
+// too-short signing key fails at startup with a clear message instead of a NullReferenceException.
+builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+    .Configure<IOptions<JwtOptions>>((options, jwtOptions) =>
     {
-        var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>()!;
-        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        var jwt = jwtOptions.Value;
+        options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtOptions.Issuer,
-            ValidAudience = jwtOptions.Audience,
-            IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-                System.Text.Encoding.UTF8.GetBytes(jwtOptions.SigningKey))
+            ValidIssuer = jwt.Issuer,
+            ValidAudience = jwt.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey))
         };
     });
 
@@ -120,8 +127,6 @@ builder.Services.AddApiVersioning(o =>
     o.SubstituteApiVersionInUrl = true;
 });
 
-
-var jwt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>()!;
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
