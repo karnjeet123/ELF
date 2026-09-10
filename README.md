@@ -24,19 +24,21 @@ dotnet run
 
 The app starts on http://localhost:5214 and opens Swagger. The SQLite file (`brewery.db`) is created on first start if it isn't there yet.
 
-Before the first request, set the JWT signing key and the login password. Both are kept out of `appsettings.json` on purpose so nobody commits a real secret:
+Before the first request, set the JWT signing key and the login password hash. Both are kept out of `appsettings.json` on purpose so nobody commits a real secret. The password itself is never stored — only a salted hash produced by ASP.NET Core's `PasswordHasher<T>`:
 
 ```
 cd src/Elf.Brewery.Api
 dotnet user-secrets set "Jwt:SigningKey" "some-long-random-string-at-least-32-chars"
-dotnet user-secrets set "StaticUser:Password" "admin@123"
+dotnet user-secrets set "StaticUser:PasswordHash" "AQAAAAIAAYagAAAAEMy/fa8x8SVCcfrP4bACBIHJtnRkcaOyi/6F7A3U+lqg67RrD9N1TiACc2S6lIO5jQ=="
 ```
 
-The app fails fast at startup with a clear message if either is missing.
+The value above is the hash of `admin@123` (the same password used in the examples below). To generate a hash for a different password, use `PasswordHasher<T>.HashPassword` from `Microsoft.AspNetCore.Identity` (e.g. in a scratch console app referencing `Microsoft.Extensions.Identity.Core`), then store the resulting string as `StaticUser:PasswordHash`.
+
+The app fails fast at startup with a clear message if either secret is missing.
 
 ## Getting a token
 
-Every brewery endpoint needs a bearer token. There is one hardcoded user: the username lives in `appsettings.json` under `StaticUser:Username`, and the password comes from user secrets (set it as shown above).
+Every brewery endpoint needs a bearer token. There is one hardcoded user: the username lives in `appsettings.json` under `StaticUser:Username`, and the password hash comes from user secrets (set it as shown above). Login still submits the plaintext password; it is verified against the stored hash and never persisted anywhere.
 
 ```
 POST /api/auth/token
@@ -185,7 +187,7 @@ Then open `coverage-report\index.html` for the full drill-down. Both `coverage-r
 
 ## Known gaps
 
-- One hardcoded user and no refresh tokens. Fine for an assignment, not for anything real.
+- One hardcoded user and no refresh tokens. Fine for an assignment, not for anything real. The password is stored as a salted hash (`PasswordHasher<T>`), not plaintext, and verified via hash comparison at login.
 - The SQLite schema is created with `EnsureCreated`, so there are no migrations.
 - No CI pipeline yet to run the tests automatically on push.
 - `OpenBreweryDb:MaxPages` is set to 5 (with `PerPage: 200`), so a refresh pulls at most 1000 breweries rather than the full upstream dataset. This keeps the assignment fast to run and demo. A warning is logged when the cap is hit; raise `MaxPages` in `appsettings.json` to pull more.

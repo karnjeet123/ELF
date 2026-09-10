@@ -80,7 +80,9 @@ public sealed class BreweryApiFactory : WebApplicationFactory<Program>
                 // user-secrets store and stays runnable on CI.
                 ["Jwt:SigningKey"] = "integration-tests-only-signing-key-32-chars-minimum",
                 ["StaticUser:Username"] = "admin@elfbeauty.com",
-                ["StaticUser:Password"] = "admin@123",
+                // Hash of "admin@123" (the password the tests still submit via the login body),
+                // generated once with Microsoft.AspNetCore.Identity.PasswordHasher<T>.
+                ["StaticUser:PasswordHash"] = "AQAAAAIAAYagAAAAEMy/fa8x8SVCcfrP4bACBIHJtnRkcaOyi/6F7A3U+lqg67RrD9N1TiACc2S6lIO5jQ==",
             });
         });
 

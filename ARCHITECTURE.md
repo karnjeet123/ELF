@@ -247,7 +247,7 @@ bound from `appsettings.json` sections in `Program.cs`.
 | CORS | Named policy with an explicit origin allow-list from `Cors:AllowedOrigins` |
 | Rate limiting | Sliding-window limiter partitioned per client IP, returns `429` |
 | Transport security | `UseHttpsRedirection` (308) everywhere, HSTS outside Development |
-| Secrets | `Jwt:SigningKey` and `StaticUser:Password` come from user secrets / environment, never `appsettings.json` |
+| Secrets | `Jwt:SigningKey` and `StaticUser:PasswordHash` (a salted hash, not the plaintext password) come from user secrets / environment, never `appsettings.json` |
 
 ### Diagram: middleware pipeline and security controls
 
