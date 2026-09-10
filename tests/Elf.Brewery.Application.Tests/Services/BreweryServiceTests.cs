@@ -2,7 +2,6 @@ using Elf.Brewery.Application.Contracts;
 using Elf.Brewery.Application.Dtos;
 using Elf.Brewery.Application.Services;
 using Elf.Brewery.Domain.Exceptions;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 using DomainBrewery = Elf.Brewery.Domain.Entities.Brewery;
@@ -11,8 +10,6 @@ namespace Elf.Brewery.Application.Tests.Services;
 
 public class BreweryServiceTests
 {
-    private const string StorageKey = "test-storage";
-
     private static BreweryService CreateSut(
         IReadOnlyList<DomainBrewery> breweries,
         Mock<IBrewerySearchService> searchMock,
@@ -23,13 +20,8 @@ public class BreweryServiceTests
         facadeMock.Setup(f => f.GetAllAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(breweries);
 
-        var services = new ServiceCollection();
-        services.AddKeyedSingleton(StorageKey, (_, _) => facadeMock.Object);
-        var provider = services.BuildServiceProvider();
-
         return new BreweryService(
-            StorageKey,
-            provider,
+            facadeMock.Object,
             searchMock.Object,
             sorterFactoryMock.Object,
             mapperMock.Object);
@@ -94,13 +86,8 @@ public class BreweryServiceTests
         var facadeMock = new Mock<IBreweryDataFacade>();
         facadeMock.Setup(f => f.RefreshFromExternalAsync(It.IsAny<CancellationToken>())).ReturnsAsync(42);
 
-        var services = new ServiceCollection();
-        services.AddKeyedSingleton(StorageKey, (_, _) => facadeMock.Object);
-        var provider = services.BuildServiceProvider();
-
         var sut = new BreweryService(
-            StorageKey,
-            provider,
+            facadeMock.Object,
             new Mock<IBrewerySearchService>().Object,
             new Mock<IBrewerySorterFactory>().Object,
             new Mock<IBreweryDtoMapper>().Object);

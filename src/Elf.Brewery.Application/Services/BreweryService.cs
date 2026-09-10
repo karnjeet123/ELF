@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using DomainBrewery = Elf.Brewery.Domain.Entities.Brewery;
 using System;
 using System.Collections.Generic;
@@ -24,13 +23,12 @@ public sealed class BreweryService : IBreweryService
     private readonly IBreweryDtoMapper _mapper;
 
     public BreweryService(
-        [ServiceKey] string storageKey,
-        IServiceProvider serviceProvider,
+        IBreweryDataFacade breweries,
         IBrewerySearchService search,
         IBrewerySorterFactory sorterFactory,
         IBreweryDtoMapper mapper)
     {
-        _breweries = serviceProvider.GetRequiredKeyedService<IBreweryDataFacade>(storageKey);
+        _breweries = breweries;
         _search = search;
         _sorterFactory = sorterFactory;
         _mapper = mapper;

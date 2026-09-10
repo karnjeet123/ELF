@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Elf.Brewery.Application.Contracts;
 using Elf.Brewery.Application.Search;
 using Elf.Brewery.Application.Services;
@@ -21,11 +23,23 @@ public static class DependencyInjection
 
         // each key builds its own facade/service chain over the repository registered under the same key
         // v1 resolves the Sqlite key, v2 the in-memory key.
-        services.AddKeyedScoped<IBreweryDataFacade, BreweryDataFacade>(BreweryStorageKeys.Sqlite);
-        services.AddKeyedScoped<IBreweryService, BreweryService>(BreweryStorageKeys.Sqlite);
+        foreach (var key in new[] { BreweryStorageKeys.Sqlite, BreweryStorageKeys.InMemory })
+        {
+            services.AddKeyedScoped<IBreweryDataFacade>(key, (sp, k) => new BreweryDataFacade(
+                sp.GetRequiredKeyedService<IBreweryRepository>(k!),
+                sp.GetRequiredService<IBreweryProvider>(),
+                sp.GetRequiredService<ICacheService>(),
+                sp.GetRequiredService<IOptions<CacheOptions>>(),
+                sp.GetRequiredService<ILogger<BreweryDataFacade>>(),
+                sp.GetRequiredService<TimeProvider>(),
+                (string)k!));
 
-        services.AddKeyedScoped<IBreweryDataFacade, BreweryDataFacade>(BreweryStorageKeys.InMemory);
-        services.AddKeyedScoped<IBreweryService, BreweryService>(BreweryStorageKeys.InMemory);
+            services.AddKeyedScoped<IBreweryService>(key, (sp, k) => new BreweryService(
+                sp.GetRequiredKeyedService<IBreweryDataFacade>(k!),
+                sp.GetRequiredService<IBrewerySearchService>(),
+                sp.GetRequiredService<IBrewerySorterFactory>(),
+                sp.GetRequiredService<IBreweryDtoMapper>()));
+        }
 
         return services;
     }

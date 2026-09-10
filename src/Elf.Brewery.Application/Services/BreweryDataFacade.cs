@@ -1,5 +1,4 @@
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using DomainBrewery = Elf.Brewery.Domain.Entities.Brewery;
@@ -24,15 +23,16 @@ public class BreweryDataFacade : IBreweryDataFacade
     private readonly TimeSpan _externalRefreshInterval = default!;
     private readonly TimeProvider _timeProvider;
     private static readonly SemaphoreSlim RefreshGate = new(1, 1);
-    public BreweryDataFacade([ServiceKey] string storageKey,
-        IServiceProvider serviceProvider,
+    public BreweryDataFacade(
+        IBreweryRepository repository,
         IBreweryProvider provider,
         ICacheService cache,
         IOptions<CacheOptions> cacheOptions,
         ILogger<BreweryDataFacade> logger,
-        TimeProvider timeProvider)
+        TimeProvider timeProvider,
+        string storageKey)
     {
-        _repository = serviceProvider.GetRequiredKeyedService<IBreweryRepository>(storageKey);
+        _repository = repository;
         _provider = provider;
         _cache = cache;
         _cacheOptions = cacheOptions;

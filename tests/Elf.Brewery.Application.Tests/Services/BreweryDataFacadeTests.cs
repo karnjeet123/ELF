@@ -1,7 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Elf.Brewery.Application.Contracts;
 using Elf.Brewery.Application.Options;
 using Elf.Brewery.Application.Services;
@@ -32,10 +29,6 @@ public class BreweryDataFacadeTests
         FakeTimeProvider timeProvider,
         int externalRefreshMinutes = 10)
     {
-        var services = new ServiceCollection();
-        services.AddKeyedSingleton(StorageKey, (_, _) => repositoryMock.Object);
-        var provider = services.BuildServiceProvider();
-
         var cacheOptions = Microsoft.Extensions.Options.Options.Create(new CacheOptions
         {
             ExpirationMinutes = 10,
@@ -43,13 +36,13 @@ public class BreweryDataFacadeTests
         });
 
         return new BreweryDataFacade(
-            StorageKey,
-            provider,
+            repositoryMock.Object,
             providerMock.Object,
             cacheMock.Object,
             cacheOptions,
             NullLogger<BreweryDataFacade>.Instance,
-            timeProvider);
+            timeProvider,
+            StorageKey);
     }
 
     private static Mock<ICacheService> CreateEmptyCacheMock()

@@ -120,13 +120,43 @@ services.AddKeyedScoped<IBreweryRepository, SqliteBreweryRepository>(BreweryStor
 services.AddKeyedSingleton<IBreweryRepository, InMemoryBreweryRepository>(BreweryStorageKeys.InMemory);
 ```
 
-Controllers resolve a specific key via `[FromKeyedServices(...)]`, and that
-same key is threaded through every layer using the `[ServiceKey]` attribute
-(introduced in .NET 8) — `BreweryService` and `BreweryDataFacade` both accept
-`[ServiceKey] string storageKey` in their constructor and use it to pull their
-own keyed dependency from `IServiceProvider`. This lets `v1` (SQLite) and
-`v2` (in-memory) run the *exact same code* against different backing stores,
-without `if/else` branching or duplicated services.
+Controllers resolve a specific key via `[FromKeyedServices(...)]`. That same
+key threading continues at the composition root: `Application/DependencyInjection.cs`
+registers `BreweryDataFacade` and `BreweryService` for each storage key using an
+explicit factory delegate, resolving each class's keyed dependency
+(`IBreweryRepository` / `IBreweryDataFacade`) once, at registration time:
+
+```csharp
+foreach (var key in new[] { BreweryStorageKeys.Sqlite, BreweryStorageKeys.InMemory })
+{
+    services.AddKeyedScoped<IBreweryDataFacade>(key, (sp, k) => new BreweryDataFacade(
+        sp.GetRequiredKeyedService<IBreweryRepository>(k!),
+        sp.GetRequiredService<IBreweryProvider>(),
+        sp.GetRequiredService<ICacheService>(),
+        sp.GetRequiredService<IOptions<CacheOptions>>(),
+        sp.GetRequiredService<ILogger<BreweryDataFacade>>(),
+        sp.GetRequiredService<TimeProvider>(),
+        (string)k!));
+
+    services.AddKeyedScoped<IBreweryService>(key, (sp, k) => new BreweryService(
+        sp.GetRequiredKeyedService<IBreweryDataFacade>(k!),
+        sp.GetRequiredService<IBrewerySearchService>(),
+        sp.GetRequiredService<IBrewerySorterFactory>(),
+        sp.GetRequiredService<IBreweryDtoMapper>()));
+}
+```
+
+`BreweryService` and `BreweryDataFacade` themselves take plain, fully-typed
+constructor parameters (`IBreweryDataFacade`, `IBreweryRepository`, etc.) —
+they never touch `IServiceProvider` or resolve their own dependencies. All
+keyed resolution lives in one place, the composition root, instead of being
+hidden inside business-logic constructors. This keeps each class's real
+dependencies visible in its constructor signature, lets DI-configuration
+mistakes fail fast at startup rather than on first request, and makes unit
+tests trivial — pass a mock straight into the constructor instead of building
+a mini `ServiceProvider` just to satisfy a keyed lookup. `v1` (SQLite) and
+`v2` (in-memory) still run the *exact same code* against different backing
+stores, without `if/else` branching or duplicated services.
 
 ### c) Facade pattern
 `BreweryDataFacade` sits between the service layer and the repository. It is

@@ -79,7 +79,7 @@ services.AddKeyedScoped<IBreweryRepository, SqliteBreweryRepository>(BreweryStor
 services.AddKeyedSingleton<IBreweryRepository, InMemoryBreweryRepository>(BreweryStorageKeys.InMemory);
 ```
 
-The service and the data facade are registered twice as well, once per key. Each one receives the key it was resolved under through `[ServiceKey]` and uses that same key to pull its own dependency. The controllers start the chain:
+The service and the data facade are registered twice as well, once per key, using an explicit factory in `Application/DependencyInjection.cs` that resolves each one's own keyed dependency at registration time (not inside the class itself). The controllers start the chain:
 
 ```csharp
 public BreweriesV2Controller([FromKeyedServices(BreweryStorageKeys.InMemory)] IBreweryService service, ...)
@@ -123,7 +123,7 @@ services.AddKeyedScoped<IBreweryRepository, SqliteBreweryRepository>(BreweryStor
 services.AddKeyedSingleton<IBreweryRepository, InMemoryBreweryRepository>(BreweryStorageKeys.InMemory);
 ```
 
-The service and the data facade are registered twice as well, once per key. Each one receives the key it was resolved under through `[ServiceKey]` and uses that same key to pull its own dependency. The controllers start the chain:
+The service and the data facade are registered twice as well, once per key, using an explicit factory in `Application/DependencyInjection.cs` that resolves each one's own keyed dependency at registration time (not inside the class itself). The controllers start the chain:
 
 ```csharp
 public BreweriesV2Controller([FromKeyedServices(BreweryStorageKeys.InMemory)] IBreweryService service, ...)
