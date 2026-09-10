@@ -176,7 +176,10 @@ use" (decided by `BreweryQuery.SortField`) from "how sorting is performed"
 2. On miss, acquire a `SemaphoreSlim` gate (shared across requests).
 3. Re-check the cache after acquiring the lock (in case another request
    already populated it while this one was waiting).
-4. Only then hit the repository, then populate the cache.
+4. If the persisted data has never been refreshed, or was last refreshed
+   longer ago than `Cache:ExternalRefreshMinutes`, refresh it from the
+   external provider first.
+5. Only then hit the repository, then populate the cache.
 
 This avoids a **cache stampede** (many concurrent requests all hitting the
 database when the cache is cold) while still allowing full concurrency once
@@ -184,6 +187,17 @@ the cache is warm (the semaphore is only touched on a miss).
 
 Cache keys are namespaced per storage key
 (`"breweries:all:{storageKey}"`), so v1 and v2 never share cached data.
+
+`Cache:ExpirationMinutes` and `Cache:ExternalRefreshMinutes` are deliberately
+separate settings: the first is a local performance knob (how long to skip a
+cheap in-memory/DB read), the second is a cost/reliability knob (how long to
+skip an expensive external API call). Expiring the in-memory cache never by
+itself calls the external provider — only staleness of the *persisted* data
+does, checked via `IBreweryRepository.GetLastRefreshUtcAsync`. This means a
+read never goes more than `ExternalRefreshMinutes` without fresh data, without
+needing a background job: the check happens lazily, on the next request after
+the window elapses. `POST .../refresh` remains available to force a refresh
+on demand, independent of this window.
 
 ### g) Circuit breaker + retry (resilience pattern via Polly)
 The HTTP client for Open Brewery DB is configured with:
@@ -243,7 +257,7 @@ bound from `appsettings.json` sections in `Program.cs`.
 | Health checks | `/health` endpoint via `AddHealthChecks()` |
 | API docs | Swagger/Swashbuckle, one doc per API version |
 | Resilience | Polly retry + circuit breaker on the external HTTP client |
-| Caching | In-memory (`IMemoryCache`), 10-minute absolute expiration, high priority |
+| Caching | In-memory (`IMemoryCache`), 10-minute absolute expiration, high priority. Persisted data is auto-refreshed from the external provider on read once it is older than `Cache:ExternalRefreshMinutes`. |
 | CORS | Named policy with an explicit origin allow-list from `Cors:AllowedOrigins` |
 | Rate limiting | Sliding-window limiter partitioned per client IP, returns `429` |
 | Transport security | `UseHttpsRedirection` (308) everywhere, HSTS outside Development |

@@ -45,9 +45,15 @@ public sealed class SqliteBreweryRepository : IBreweryRepository
         await _db.SaveChangesAsync(ct);
     }
 
-    public Task<DateTimeOffset?> GetLastRefreshUtcAsync(CancellationToken ct)
+    public async Task<DateTimeOffset?> GetLastRefreshUtcAsync(CancellationToken ct)
     {
-        return _db.Breweries.MaxAsync(x => (DateTimeOffset?)x.LastRefreshedUtc, ct);
+        // Sqlite's EF Core provider cannot translate MAX() over a DateTimeOffset column into
+        // SQL, so the aggregate is computed client-side over the (small) set of timestamps.
+        var timestamps = await _db.Breweries
+            .Select(x => x.LastRefreshedUtc)
+            .ToListAsync(ct);
+
+        return timestamps.Count == 0 ? null : timestamps.Max();
     }
 
 }

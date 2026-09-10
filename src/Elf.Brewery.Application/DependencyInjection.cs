@@ -12,6 +12,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
+        services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IBrewerySearchService, BrewerySearchService>();
         services.AddKeyedSingleton<IBrewerySorter, NameSorter>(BrewerySortField.Name);
         services.AddKeyedSingleton<IBrewerySorter, CitySorter>(BrewerySortField.City);
