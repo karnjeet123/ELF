@@ -44,6 +44,8 @@ public sealed class BrewerySearchService : IBrewerySearchService
                      .OrderByDescending(b => b.Name.StartsWith(term, StringComparison.OrdinalIgnoreCase))
                      .ThenBy(b => b.Name.Length)
                      .ThenBy(b => b.Name, StringComparer.OrdinalIgnoreCase)
+                     .GroupBy(b => b.Name, StringComparer.OrdinalIgnoreCase)
+                     .Select(g => g.First())
                      .Take(limit)
                      .Select(b => new AutocompleteItemDto(b.Id, b.Name, b.City))
                      .ToList();
